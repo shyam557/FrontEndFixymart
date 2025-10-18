@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
 
-//these will be used for git ci cd
 
   "scripts": {
     "dev": "next dev -p 3000",
