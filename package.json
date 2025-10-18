@@ -2,12 +2,18 @@
   "name": "urbanx-ecommerce-nextjs",
   "version": "0.1.0",
   "private": true,
+
+//these will be used for git ci cd
+
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "export": "next export",
-    "start": "next start"
+    "start": "next start",
+    "test":"next test"
   },
+
+
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^41.4.2",
     "@ckeditor/ckeditor5-react": "^10.0.0",
