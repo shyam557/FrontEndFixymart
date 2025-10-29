@@ -63,7 +63,7 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
 
 
 //work with only ram@gmail.com + 123456789 bcz of provider login
-    const data=await createOneService("1ee209c7-333d-426d-976c-8f0c7ce46376",form.name,form.image,Math.floor(form.price),form.subcategoryId,form.status === 'Active',form.duration);
+    const data=await createOneService("1ee209c7-333d-426d-976c-8f0c7ce46376",form.name,form.image.name,Math.floor(form.price),form.subcategoryId,form.status === 'Active',form.duration);
     // const data=await createOneService("1ee209c7-333d-426d-976c-8f0c7ce46376",payload);
     console.log("service added sucessfully",data);
 
