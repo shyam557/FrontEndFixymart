@@ -1,14 +1,15 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
-import { updateOrder } from "../../../../src/lib/api/adminApi";
+import { updateOrder , updateOrderStatus } from "../../../../src/lib/api/adminApi";
 
 export default function EditOrderModal({ order, onClose, onUpdate }) {
 
 
+  console.log("EditOrderModal received order:", order);
   const [scheduledAt, setScheduledAt] = useState(order?.scheduledAt || "");
   const [status, setStatus] = useState(order?.status || "confirmed");
-  const [totalAmount, setTotalAmount] = useState(order?.totalAmount || "");
+  const [totalAmount, setTotalAmount] = useState(order.amount );
   const [specialInstructions, setSpecialInstructions] = useState(order?.specialInstructions || "");
 
   // address
@@ -31,7 +32,7 @@ export default function EditOrderModal({ order, onClose, onUpdate }) {
     console.log("Order data:", order);
     setScheduledAt(order?.scheduledAt || "");
     setStatus(order?.status || "confirmed");
-    setTotalAmount(order?.totalAmount || "");
+    setTotalAmount(order.amount );
     setSpecialInstructions(order?.specialInstructions || "");
   }, [order]);
 
@@ -68,7 +69,7 @@ export default function EditOrderModal({ order, onClose, onUpdate }) {
     };
 
     try {
-      const res = await updateOrder(order.orderId, body);
+      const res = await updateOrderStatus(order.orderId, body);
       if (onUpdate) onUpdate({ ...order, ...body });
       setSuccess(true);
       setTimeout(() => {

@@ -1,4 +1,7 @@
 "use client";
+export const BACKEND_PUBLIC_API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL 
+
+
 
 import React, { useState, useEffect } from "react";
 import QueryProvider from "../../QueryProvider";
@@ -85,8 +88,8 @@ function ServicesPageInner() {
                 fetchSubCategories.push({
                   id:subcat.id,
                   name:subcat.name
-                }),
-              )),
+                })
+              ))
 
 
         ));
@@ -250,9 +253,9 @@ function ServicesPageInner() {
                         {svc.id}
                       </td>
                       <td className="px-4 py-2 text-center align-middle">
-                        {svc.subcategory?.icon ? (
+                        {svc.image? (
                           <Image
-                            src={svc.subcategory.icon}
+                            src={`${BACKEND_PUBLIC_API_URL}${svc.image}`}
                             alt={svc.subcategory.name}
                             width={40}
                             height={40}
@@ -260,7 +263,7 @@ function ServicesPageInner() {
                           />
                         ) : (
                           <span className="inline-block w-10 h-10 rounded bg-gray-200 flex items-center justify-center text-xs text-gray-400 mx-auto">
-                            IMG
+                            IMG{svc.image}
                           </span>
                         )}
                       </td>

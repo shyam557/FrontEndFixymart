@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:3002/api/v1"; // your backend base URL
+export const API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL ?? 'http://localhost:3002/api/v1';
 
 import { getToken } from "../../lib/auth/auth";
 
@@ -23,6 +23,7 @@ export async function registerUser(name, email,phoneNumber,role, profileImage, p
 
 
 export async function fetchAllCategories() {
+  console.log("Fetching all categories from", `${API_URL}/categories`);
 
   const res = await fetch(`${API_URL}/categories`, {
     method: "GET",
@@ -68,6 +69,25 @@ export async function fetchAllServices() {
   return await res.json();
 }
 
+// New: upload image file (returns { filename, url, path } from backend)
+export async function uploadServiceImage(file) {
+  const form = new FormData();
+  form.append("image", file);
+  const res = await fetch(`${API_URL}/services/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      // NOTE: do not set Content-Type; browser will set multipart boundary
+    },
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: 'Upload failed' }));
+    throw new Error(err.message || 'Image upload failed');
+  }
+  return await res.json();
+}
+
 export async function createOneService(providerId,description,image,customPrice,subcategoryId,isActive,duration) {
 // export async function createOneService(providerId,payLoad) {
 
@@ -80,7 +100,6 @@ export async function createOneService(providerId,description,image,customPrice,
     headers: { 
       "Content-Type": "application/json" ,
        "Authorization": `Bearer ${getToken()}`
-
     },
     body: JSON.stringify({ description ,customPrice,subcategoryId,isActive ,image, duration}),
     // body: payLoad,
@@ -176,7 +195,8 @@ export async function fetchAllOrders() {
   return await res.json();
 }
 
-//for user
+
+//for order update
 export async function updateOrder(orderId, orderData) {
 
   console.log("Updating order:", orderId, orderData); 
@@ -188,6 +208,24 @@ export async function updateOrder(orderId, orderData) {
 
     },
     body: JSON.stringify(orderData),
+  });
+  return await res.json();
+}
+//for order update
+export async function updateOrderStatus(orderId, orderData) {
+
+  console.log("Updating order:", orderId, orderData); 
+  const res = await fetch(`${API_URL}/bookings/${orderId}`, {
+    method: "PATCH",
+   headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+
+    },
+    body: JSON.stringify({
+      status: orderData.status,
+      totalAmount: orderData.totalAmount
+    }),
   });
   return await res.json();
 }

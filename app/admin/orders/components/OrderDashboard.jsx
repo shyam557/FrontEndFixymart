@@ -81,7 +81,7 @@ function OrderDashboard() {
             hour: "2-digit",
             minute: "2-digit",
           }),
-          amount: `₹${order.total_amount}`,
+          amount: order.total_amount,
           status:
             order.status.charAt(0).toUpperCase() + order.status.slice(1),
           profileUrl: `/admin/users/${order.customer?.id}`,
@@ -255,7 +255,7 @@ function OrderDashboard() {
                       />
                     </td>
                     <td className="px-4 py-2 text-left">{order.services}</td>
-                    <td className="px-4 py-2 text-center">{order.amount}</td>
+                    <td className="px-4 py-2 text-center">₹{order.amount}</td>
                     <td className="px-4 py-2 text-left">
                       <a
                         href={order.profileUrl}
