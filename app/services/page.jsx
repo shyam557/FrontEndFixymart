@@ -8,9 +8,18 @@ import CarpenterPage from "./carpenter/CarpenterPage";
 import CleaningPage from "./cleaning/CleaningPage";
 import PainterPage from "./Painter/PainterPage";
 import SingleServiceSearch from "./SingleServiceSearch/SingleServiceSearch";
+import React, { Suspense } from "react";
 
 
 export default function ServicesPage() {
+  return (
+    <Suspense fallback={<div>Loading services...</div>}>
+      <Services />
+    </Suspense>
+  );
+}
+
+ function Services() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
 

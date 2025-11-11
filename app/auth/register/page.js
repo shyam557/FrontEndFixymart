@@ -1,4 +1,6 @@
 "use client";
+import Image from "next/image";
+
 import { useState } from "react";
 import { Eye, EyeOff, User, Mail, Phone, Lock } from "lucide-react";
 import Link from "next/link";
@@ -154,7 +156,7 @@ export default function Register() {
           <hr className="flex-1" />
         </div>
         <button type="button" className="w-full flex items-center justify-center gap-2 border px-3 py-2 rounded hover:bg-gray-100">
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+          <Image src="https://www.svgrepo.com/show/475656/google-color.svg"  fill alt="Google" className="w-5 h-5" />
           Continue with Google
         </button>
         <p className="text-center mt-4 text-gray-600">Already have an account? <Link href="login" className="text-purple-600 hover:underline">Sign in</Link></p>

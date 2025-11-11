@@ -1,70 +1,92 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  items: []
+};
+
 const cartSlice = createSlice({
   name: 'cart',
-  initialState: {
-    items: [],
-  },
+  initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const item = action.payload;
-      const quantityChange = item.quantity ?? 1;
-
-      // ❗ Validate the item before processing
-      if (!item || !item.id || !item.title || !item.price || !item.category) return;
-
-      const existing = state.items.find(
-        (i) => i.id === item.id && i.category === item.category
+    // payload: { id, title, price, quantity = 1, category, providerId, ... }
+    addItem(state, action) {
+      const incoming = action.payload;
+      const idx = state.items.findIndex(
+        i => i.id === incoming.id && i.providerId === incoming.providerId
       );
-
-      if (existing) {
-        existing.quantity += quantityChange;
-
-        // अगर quantity 0 या negative हो गई है तो remove कर दो
-        if (existing.quantity <= 0) {
-          state.items = state.items.filter(
-            (i) => !(i.id === item.id && i.category === item.category)
-          );
-        }
-      } else if (quantityChange > 0) {
-        state.items.push({ ...item, quantity: quantityChange });
+      if (idx >= 0) {
+        state.items[idx].quantity = (state.items[idx].quantity || 1) + (incoming.quantity || 1);
+      } else {
+        state.items.push({
+          ...incoming,
+          quantity: incoming.quantity || 1
+        });
       }
     },
 
-    decrementQuantity: (state, action) => {
-      const { id, category } = action.payload;
-      const existing = state.items.find(
-        (item) => item.id === id && item.category === category
+    // alias: same as addItem for backward compatibility
+    addToCart(state, action) {
+      const incoming = action.payload;
+      const idx = state.items.findIndex(
+        i => i.id === incoming.id && i.providerId === incoming.providerId
       );
+      if (idx >= 0) {
+        state.items[idx].quantity = (state.items[idx].quantity || 1) + (incoming.quantity || 1);
+      } else {
+        state.items.push({
+          ...incoming,
+          quantity: incoming.quantity || 1
+        });
+      }
+    },
 
-      if (existing) {
-        existing.quantity -= 1;
-        if (existing.quantity <= 0) {
-          state.items = state.items.filter(
-            (item) => !(item.id === id && item.category === category)
-          );
+    // payload: { id, providerId }
+    removeFromCart(state, action) {
+      const { id, providerId } = action.payload;
+      state.items = state.items.filter(i => !(i.id === id && i.providerId === providerId));
+    },
+
+    // decrease quantity by 1 or remove item if quantity = 1
+    decrementQuantity(state, action) {
+      const { id, providerId } = action.payload;
+      const idx = state.items.findIndex(
+        i => i.id === id && i.providerId === providerId
+      );
+      if (idx >= 0) {
+        if (state.items[idx].quantity > 1) {
+          state.items[idx].quantity -= 1;
+        } else {
+          state.items = state.items.filter(i => !(i.id === id && i.providerId === providerId));
         }
       }
     },
 
-    removeFromCart: (state, action) => {
-      const { id, category } = action.payload;
-      state.items = state.items.filter(
-        (item) => !(item.id === id && item.category === category)
-      );
+    // flexible: payload can be id (legacy) or { id, providerId }
+    removeItem(state, action) {
+      const payload = action.payload;
+      if (typeof payload === 'object' && payload !== null && payload.id) {
+        const { id, providerId } = payload;
+        state.items = state.items.filter(
+          i => !(i.id === id && (providerId ? i.providerId === providerId : true))
+        );
+      } else {
+        state.items = state.items.filter(i => i.id !== payload);
+      }
     },
 
-    clearCart: (state) => {
+    clearCart(state) {
       state.items = [];
-    },
-  },
+    }
+  }
 });
 
 export const {
+  addItem,
   addToCart,
-  decrementQuantity,
   removeFromCart,
+  removeItem,
   clearCart,
+  decrementQuantity
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -1,6 +1,6 @@
 "use client";
 import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "../../../store/cartSlice"; // Adjust the path if needed
+import { removeItem } from "../../../src/store/cartSlice"; // make sure this path points to your src/store
 
 export default function CartCheckout() {
   const dispatch = useDispatch();
@@ -13,7 +13,8 @@ export default function CartCheckout() {
   // Handler to remove all items from the cart
   const handleRemoveAll = () => {
     items.forEach(item => {
-      dispatch(removeItem(item.id));
+      // include providerId so removeItem targets correct entry
+      dispatch(removeItem({ id: item.id, providerId: item.providerId }));
     });
   };
 

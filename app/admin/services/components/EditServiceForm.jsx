@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { uploadServiceImage } from "../../../../src/lib/api/adminApi";
 
 const categories = ["Home Appliances", "Beauty", "Home Services"];
 const statusOptions = ["Active", "Inactive", "Completed", "Pending"];
@@ -52,9 +53,30 @@ export default function EditServiceForm({ initialData = {}, onSubmit, onCancel }
     inputRef.current && inputRef.current.click();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit && onSubmit(form);
+
+    try {
+      let imageToSend = initialData.image || null;
+      if (form.image && typeof form.image !== "string") {
+        // file selected -> upload
+        const uploadRes = await uploadServiceImage(form.image);
+        imageToSend = uploadRes.url || (uploadRes.filename ? `/uploads/${uploadRes.filename}` : null);
+      } else if (typeof form.image === "string") {
+        imageToSend = form.image;
+      }
+
+      // Prepare payload to parent (image is a URL string now)
+      const payload = {
+        ...form,
+        image: imageToSend,
+      };
+
+      onSubmit && onSubmit(payload);
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("Failed to upload image: " + (err.message || ""));
+    }
   };
 
   return (

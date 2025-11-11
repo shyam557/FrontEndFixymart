@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+  import { Suspense } from "react";
 
 ChartJS.register(
   CategoryScale,
@@ -28,7 +29,15 @@ ChartJS.register(
 const cardClass =
   'bg-white rounded-xl shadow p-4 flex-1 min-w-[600px] max-w-[1100px] mx-auto min-h-[370px]';
 
-export default function AdminDashboard() {
+  
+  export default function dashboard() {
+    return (
+    <Suspense fallback={<div>Loading orders...</div>}>
+    <AdminDashboard/>
+    </Suspense>
+    );
+  }
+function AdminDashboard() {
   // Dummy data for charts
   const userSignupData = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],

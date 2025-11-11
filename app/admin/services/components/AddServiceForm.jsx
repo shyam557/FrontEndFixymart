@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { createOneService } from "../../../../src/lib/api/adminApi";
+import { createOneService, uploadServiceImage } from "../../../../src/lib/api/adminApi";
 
 
 const initialState = {
@@ -59,19 +59,33 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
       return;
     }
 
-    //here send a request to submit the data
+    try {
+      let imageUrl = null;
+      if (form.image && typeof form.image !== "string") {
+        // upload image file first
+        const uploadRes = await uploadServiceImage(form.image);
+        imageUrl = uploadRes.url || (uploadRes.filename ? `/uploads/${uploadRes.filename}` : null);
+      } else if (typeof form.image === "string") {
+        imageUrl = form.image;
+      }
 
+      // Use provider id (hardcoded now) and send imageUrl
+      const data = await createOneService(
+        "1ee209c7-333d-426d-976c-8f0c7ce46376",
+        form.name,
+        imageUrl,
+        Math.floor(form.price),
+        form.subcategoryId,
+        form.status === 'Active',
+        form.duration
+      );
 
-//work with only ram@gmail.com + 123456789 bcz of provider login
-    const data=await createOneService("1ee209c7-333d-426d-976c-8f0c7ce46376",form.name,form.image,Math.floor(form.price),form.subcategoryId,form.status === 'Active',form.duration);
-    // const data=await createOneService("1ee209c7-333d-426d-976c-8f0c7ce46376",payload);
-    console.log("service added sucessfully",data);
-
-
-
-
-
-    onSubmit && onSubmit(payload);
+      console.log("service added successfully", data);
+      onSubmit && onSubmit(payload);
+    } catch (err) {
+      console.error("Failed to create service", err);
+      alert("Failed to add service: " + (err.message || ""));
+    }
   };
 
   return (

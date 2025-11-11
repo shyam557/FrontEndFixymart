@@ -1,4 +1,6 @@
 "use client";
+import Image from "next/image";
+
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -57,7 +59,7 @@ export default function Login() {
         </Link>
         <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
         <p className="text-center text-gray-500 mb-4">
-          Sign in to your account to continue
+          Sign in to your account to continues
         </p>
       </div>
       <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow">
@@ -69,7 +71,7 @@ export default function Login() {
                 <Mail size={20} />
               </span>
               <input
-                name="email"
+                name="emails"
                 type="email"
                 placeholder="Enter your email"
                 value={form.email}
@@ -113,7 +115,8 @@ export default function Login() {
           type="button"
           className="w-full flex items-center justify-center gap-2 border px-3 py-2 rounded hover:bg-gray-100"
         >
-          <img
+          <Image
+          fill
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
             className="w-5 h-5"

@@ -2,11 +2,15 @@
 
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, decrementQuantity } from "../../../src/store/cartSlice";
+import { addItem, decrementQuantity } from "../../../src/store/cartSlice";
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import CustomSidebar from "../sidebar/CustomSidebar";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+
+import { useRouter } from 'next/navigation';
+import ServiceModal from "../details/ServiceModal";
+import ServiceDetail from "../details/ServiceDetail";
 
 import { fetchOneCategories ,fetchOneSubCategoryServices } from "../../../src/lib/api/api";
 // import { useEffect, useState } from 'react';
@@ -20,6 +24,10 @@ export default function AcRepairPage() {
   const [quantities, setQuantities] = useState({});
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+  const [selectedService, setSelectedService] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
 
@@ -75,6 +83,7 @@ export default function AcRepairPage() {
               price:srv.custom_price,
               duration:"100min",
               imgSrc:"image",
+              provider_id:srv.provider_id,
               description:srv.description
 
             }))
@@ -146,13 +155,23 @@ useEffect(() => {
   };
 
   const handleAdd = (service) => {
-    dispatch(addToCart({ ...service, quantity: 1 }));
+
+    console.log("adding service",service);
+    dispatch(addItem({
+     id: service.id,
+     title: service.title,
+     price: service.price,
+     category: service.category,
+     providerId: service.provider_id, // <-- include providerId here
+     quantity: 1
+   }));
+    // dispatch(addToCart({ ...service, quantity: 1 }));
     setQuantities((prev) => ({ ...prev, [service.id]: 1 }));
     toast.success("Item added to cart");
   };
 
   const handleIncrement = (service) => {
-    dispatch(addToCart({ ...service, quantity: 1 }));
+    dispatch(addItem({ ...service, quantity: 1 }));
     setQuantities((prev) => ({
       ...prev,
       [service.id]: (prev[service.id] || 1) + 1,
@@ -234,7 +253,7 @@ useEffect(() => {
                         </div>
 
                         <div className="mt-1">
-                          <button className="text-purple-600 text-[12px] sm:text-sm hover:underline">
+                          <button onClick={() => { setSelectedService(service); setIsModalOpen(true); document.body.style.overflow = 'hidden'; }} className="text-purple-600 text-[12px] sm:text-sm hover:underline">
                             View details
                           </button>
                         </div>
@@ -302,6 +321,40 @@ useEffect(() => {
             View Cart
           </button>
         </div>
+      )}
+
+
+       {isModalOpen && selectedService && (
+        <ServiceModal
+          service={selectedService}
+          groupedServices={services}
+          onClose={() => { setIsModalOpen(false); setSelectedService(null); document.body.style.overflow = ''; }}
+          
+          onAdd={(s) => {
+
+             dispatch(addItem({
+     id: s.id,
+     title: s.title,
+     price: s.price,
+     category: s.category,
+     providerId: s.provider_id, // <-- include providerId here
+     quantity: 1
+   }));
+            //  dispatch(addToCart({ ...s, quantity: 1 })); toast.success('Item added to cart'); 
+            }}
+          onDone={(s) => { 
+            // dispatch(addToCart({ ...s, quantity: 1 }));
+     dispatch(addItem({
+     id: s.id,
+     title: s.title,
+     price: s.price,
+     category: s.category,
+     providerId: s.provider_id, // <-- include providerId here
+     quantity: 1
+   }));            
+            router.push('/cart'); }}
+          DetailComponent={ServiceDetail}
+        />
       )}
     </div>
   );

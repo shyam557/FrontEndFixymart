@@ -14,10 +14,11 @@ export default function CartItem({ item }) {
         {item.quantity > 1 && (
           <span className="text-gray-500"> × {item.quantity}</span>
         )}
+        {item.providerId && <span className="text-xs text-gray-400 ml-2">provider:{item.providerId}</span>}
       </div>
       <button
         onClick={() =>
-          dispatch(removeFromCart({ id: item.id, category: item.category }))
+          dispatch(removeFromCart({ id: item.id, providerId: item.providerId }))
         }
         className="ml-2 text-red-500 text-xs underline"
       >

@@ -2,16 +2,16 @@
 
 import HeroSection from "./components/Herosection";
 //  import Mostservice from "./card/page";
- import CleaningServices from "./card/Cleaner/page";
- import Applianceservice from "./card/ACservices/page";
- import SmartLockBanner from "./card/smart doorbeell/page"; 
+//  import CleaningServices from "./card/Cleaner/page";
+//  import Applianceservice from "./card/ACservices/page";
+//  import SmartLockBanner from "./card/smart doorbeell/page"; 
   // import Mservice from "./card/mservice/page";
-import PlumberServices from "./card/plumber/page";
-import ElectricianServices from "./card/electrician/page";
+// import PlumberServices from "./card/plumber/page";
+// import ElectricianServices from "./card/electrician/page";
 
-import PainterServices from "./card/Painter/page";
-import ModularKitchen from "./card/Modular Kitchen/page";
-import Carpenterservice from "./card/carpenter/page";
+// import PainterServices from "./card/Painter/page";
+// import ModularKitchen from "./card/Modular Kitchen/page";
+// import Carpenterservice from "./card/carpenter/page";
 
 import { fetchAllCategories } from "../src/lib/api/api";
 import { useEffect, useState } from 'react';
@@ -100,29 +100,20 @@ export default function Home() {
         <SingleService key={cat.id}
   categoryName={cat.name} 
   subcategoryId={cat.subcategories[0].id} 
-         />,
+         />
 
+))}
 
-        // <div key={cat.id}>
-        //   <h3>{cat.name}</h3>
-        //   <ul>
-        //     {cat.subcategories?.map((sub) => (
-        //       <li key={sub.id}>{sub.name} - ₹{sub.basePrice}</li>
-        //     ))}
-        //   </ul>
-        // </div>
-      ))}
-
-
-              <CleaningServices />
-             <Applianceservice />
-             <SmartLockBanner />
+{/*  */}
+              {/* <CleaningServices /> */}
+             {/* <Applianceservice /> */}
+             {/* <SmartLockBanner /> */}
            {/* <Mservice /> */}
-            <PlumberServices/>
-            <ElectricianServices/>
-            <PainterServices />
-            <ModularKitchen />
-            <Carpenterservice />
+            {/* <PlumberServices/> */}
+            {/* <ElectricianServices/> */}
+            {/* <PainterServices /> */}
+            {/* <ModularKitchen /> */}
+            {/* <Carpenterservice /> */}
           </div> 
         
       </main>

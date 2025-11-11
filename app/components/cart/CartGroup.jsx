@@ -1,8 +1,7 @@
 'use client';
 
 import { useDispatch } from 'react-redux';
-import { removeFromCart } from '../../../src/store/cartSlice';
-
+import { removeFromCart } from '../../../src/store/cartSlice'; // keep path consistent with your project
 
 const categoryImages = {
   electrician: '/images/electrician.png',
@@ -34,10 +33,14 @@ export default function CartItemGrouped({ category, items, onAddServices, onChec
 
       <ul className="ml-3 text-sm text-gray-700 list-disc">
         {items.map((item) => (
-          <li key={item.id} className="mb-1 flex justify-between items-center">
-            <span>{item.title} x{item.quantity}</span>
+          <li key={`${item.id}-${item.providerId || 'noprov'}`} className="mb-1 flex justify-between items-center">
+            <span>
+              {item.title} x{item.quantity}
+              {/* Example: show providerId for debugging */}
+              {/* {item.providerId && <span className="text-xs text-gray-400 ml-2">provider:{item.providerId}</span>} */}
+            </span>
             <button
-              onClick={() => dispatch(removeFromCart({ id: item.id, category }))}
+              onClick={() => dispatch(removeFromCart({ id: item.id, providerId: item.providerId }))}
               className="text-red-600 text-xs ml-2 underline"
             >
               Remove

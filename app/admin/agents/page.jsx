@@ -6,7 +6,17 @@ import AgentTable from "./components/AgentTable";
 import AddAgentModal from "./components/AddAgentModal";
 import { UserPlus, Download, MapPin, Clock } from "lucide-react";
 
-export default function AgentsDashboard() {
+import { Suspense } from "react";
+
+export default function agents() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+  <AgentsDashboard/>
+  </Suspense>
+  );
+}
+
+function AgentsDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [filters, setFilters] = useState({ status: "", region: "" });
   const [search, setSearch] = useState("");

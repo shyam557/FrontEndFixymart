@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock } from "lucide-react";
@@ -8,8 +8,11 @@ import Link from "next/link";
 import axios from "axios";
 
 import { loginUser } from "../../../src/lib/api/api";
-import { setToken } from "../../../src/lib/auth/auth";
+import { setSessionData,getSessionData, setToken } from "../../../src/lib/auth/auth";
 
+// Debug imported values to help trace runtime import issues
+// If you see 'storeData is not a function' in the console, this will show what was imported.
+console.log('auth imports:', { storeData: setSessionData, getData: getSessionData, setToken });
 
 export default function Login() {
   const router = useRouter();
@@ -34,9 +37,24 @@ export default function Login() {
 
      
        const data = await loginUser(form.email, form.password);
+       console.log("Login response data:", data);
     if (data.access_token) {
       setToken(data.access_token);
+          setSessionData(data);
+          // getData();
+
+      // if (typeof storeData === 'function') {
+      //   try {
+      //   } catch (err) {
+      //     console.warn('storeData threw an error:', err);
+      //   }
+      // } else {
+      //   console.warn('storeData is not a function:', storeData);
+      // }
+
       await alert("LogIn successful!.");
+      console.log("All the data:", getSessionData());
+
       router.push("../../");
     } else {
       alert(data.message || "Error signing up");
@@ -58,7 +76,7 @@ export default function Login() {
         </Link>
         <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
         <p className="text-center text-gray-500 mb-4">
-          Sign in to your account to continue
+          Sign in to your account to continues
         </p>
       </div>
       <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow">
@@ -114,7 +132,8 @@ export default function Login() {
           type="button"
           className="w-full flex items-center justify-center gap-2 border px-3 py-2 rounded hover:bg-gray-100"
         >
-          <img
+          <Image
+          fill
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
             className="w-5 h-5"
