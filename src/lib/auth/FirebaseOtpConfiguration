@@ -1,0 +1,25 @@
+import { initializeApp } from "firebase/app";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {}, auth);
+
+export async function sendOtp(phoneNumber) {
+  const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+  window.confirmationResult = confirmationResult;
+  return 'OTP sent!';
+}
+
+export async function verifyOtp(code) {
+  const result = await window.confirmationResult.confirm(code);
+  const idToken = await result.user.getIdToken();
+  return idToken; // Send this to your NestJS backend
+}

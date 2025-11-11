@@ -6,8 +6,19 @@ import PaymentMethods from "./components/PaymentMethods";
 import PaymentTabs from "./components/PaymentTabs";
 import PaymentTable from "./components/PaymentTable";
 import PaymentQuickActions from "./components/PaymentQuickActions";
+import { Suspense } from "react";
 
-export default function PaymentsDashboard() {
+
+export default function payments() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+    <PaymentsDashboard/>
+  </Suspense>
+  );
+}
+
+
+ function PaymentsDashboard() {
   // Dummy data for stats, chart, methods, table, etc.
   const [tab, setTab] = useState("Monthly");
   const [payments, setPayments] = useState([

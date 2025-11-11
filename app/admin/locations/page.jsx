@@ -5,6 +5,7 @@ import CityList from "./components/CityList";
 import CityDetails from "./components/CityDetails";
 import CityMapPlaceholder from "./components/CityMapPlaceholder";
 import LocationModal from "./components/LocationModal";
+import { Suspense } from "react";
 
 const initialCities = [
   {
@@ -45,7 +46,16 @@ const initialCities = [
   },
 ];
 
-export default function LocationManagerPage() {
+
+
+export default function locations() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+  <LocationManagerPage/>
+  </Suspense>
+  );
+}
+function LocationManagerPage() {
 
   const [tab, setTab] = useState("Cities");
   const [cities, setCities] = useState(initialCities);

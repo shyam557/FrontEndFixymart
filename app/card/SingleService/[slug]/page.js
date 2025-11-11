@@ -1,4 +1,6 @@
 "use client";
+import Image from "next/image";
+
 import React, { useState } from "react";
 import acServicesData from "../components/data/acServicesData";
 import ReviewStats from "../components/review/ReviewStats";
@@ -34,7 +36,8 @@ export default function ServiceDetailsPage() {
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 mt-8">
         <div className="flex-1">
           <div className="w-full h-[220px] md:h-[320px] relative rounded-2xl overflow-hidden flex items-center justify-center bg-gray-100">
-            <img
+            <Image
+            fill
               src={details.image}
               alt={details.title}
               className="object-contain"
@@ -46,7 +49,7 @@ export default function ServiceDetailsPage() {
           </div>
           <div className="h-5" />
           <div className="rounded-2xl p-6 mb-4">
-            <div className="text-lg font-bold text-gray-900 mb-4">What's Included</div>
+            <div className="text-lg font-bold text-gray-900 mb-4">Whats Included</div>
             <ul className="mb-5 space-y-2 text-sm">
               <li>AC cleaning and filter wash</li>
               <li>Gas check and refill (if needed)</li>

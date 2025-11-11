@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import FileCard from "./FileCard";
 import FilesToolbar from "./FilesToolbar";
+import { Suspense } from "react";
 
 const TABS = [
   "All Files",
@@ -22,7 +23,15 @@ const initialFiles = [
   { type: "file", ext: "pdf", icon: "📄", name: "Safety Protocols.pdf", desc: "2.8 MB • Updated 1 day ago", bg: "#fdeaea" },
 ];
 
-export default function FilesPage() {
+
+export default function files() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+  <FilesPage/>
+  </Suspense>
+  );
+}
+ function FilesPage() {
   const [tab, setTab] = useState(1); // 1 = Company Files
   const [search, setSearch] = useState("");
   const [view, setView] = useState("grid");

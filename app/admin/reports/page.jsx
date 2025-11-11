@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import ReportStats from "./components/ReportStats";
 import ReportFilters from "./components/ReportFilters";
 import BookingsTrendChart from "./components/BookingsTrendChart";
@@ -8,7 +8,21 @@ import RevenueByCategoryChart from "./components/RevenueByCategoryChart";
 import DetailedServiceReportsTable from "./components/DetailedServiceReportsTable";
 import TopProvidersList from "./components/TopProvidersList";
 import CustomerSatisfactionMetrics from "./components/CustomerSatisfactionMetrics";
+// import { Suspense } from/ "react";
 
+// app/admin/reports/page.jsx (or .tsx)
+// "use client";
+
+// import {  } from "react";
+// import ReportsContent from "./ReportsContent";
+
+// export default function ReportsPage() {
+//   return (
+//     <Suspense fallback={<div>Loading reports...</div>}>
+//       <ReportsContent />
+//     </Suspense>
+//   );
+// }
 const stats = [
   {
     label: "Total Bookings",
@@ -57,7 +71,18 @@ const satisfactionMetrics = {
   complaints: 5.2,
 };
 
-export default function ReportsPage() {
+
+
+export default function reports() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+    <ReportsPage/>
+  </Suspense>
+  );
+}
+
+
+function ReportsPage() {
   const [filters, setFilters] = useState({ from: "", to: "", service: "" });
   const [search, setSearch] = useState("");
   const [bookingsPeriod, setBookingsPeriod] = useState("6m");

@@ -1,5 +1,10 @@
+"use client";
 export const API_URL = "http://localhost:3002/api/v1"; // your backend base URL
 import { getToken } from "../../lib/auth/auth";
+
+// app/admin/users/page.tsx or page.jsx
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 
 export async function loginUser(email, password) {

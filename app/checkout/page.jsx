@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
           {/* Cancellation Policy */}
           <div className="bg-white p-4 rounded shadow text-xs text-gray-600">
             <div className="font-semibold mb-1">Cancellation policy</div>
-            Free cancellations if done more than 12 hrs before the service or if a professional isn't assigned. A fee will be charged otherwise.
+            Free cancellations if done more than 12 hrs before the service or if a professional isn&apos;t assigned. A fee will be charged otherwise.
           </div>
         </div>
 

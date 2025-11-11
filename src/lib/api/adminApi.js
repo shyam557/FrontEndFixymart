@@ -1,7 +1,18 @@
-export const API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL ?? 'http://localhost:3002/api/v1';
+"use client";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL ?? 'http://localhost:3002/api/v1';
 
 import { getToken } from "../../lib/auth/auth";
 
+
+// app/admin/users/page.tsx or page.jsx
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+function UsersList() {
+  const searchParams = useSearchParams();
+  const filter = searchParams.get("filter");
+  return <div>Current filter: {filter ?? "none"}</div>;
+}
 
 export async function loginUser(email, password) {
   const res = await fetch(`${API_URL}/auth/login`, {

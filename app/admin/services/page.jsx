@@ -1,6 +1,7 @@
 "use client";
-export const BACKEND_PUBLIC_API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL 
+const BACKEND_PUBLIC_API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL 
 
+import { Suspense } from "react";
 
 
 import React, { useState, useEffect } from "react";
@@ -385,7 +386,15 @@ function ServicesPageInner() {
   ); // End of component
 }
 
-export default function ServicesPage() {
+
+export default function services() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+  <ServicesPage/>
+  </Suspense>
+  );
+}
+ function ServicesPage() {
   return (
     <QueryProvider>
       <ServicesPageInner />

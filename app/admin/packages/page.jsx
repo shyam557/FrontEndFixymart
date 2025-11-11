@@ -4,6 +4,7 @@ import PackageCard from "./PackageCard";
 import { Plus } from "lucide-react";
 import EditPackageModal from "./EditPackageModal";
 import AddPackageModal from "./AddPackageModal";
+import { Suspense } from "react";
 
 const TABS = [
   "All Services",
@@ -53,7 +54,16 @@ const packagesData = [
   },
 ];
 
-export default function PackagesPage() {
+
+export default function packages() {
+  return (
+  <Suspense fallback={<div>Loading orders...</div>}>
+  <PackagesPage/>
+  </Suspense>
+  );
+}
+
+function PackagesPage() {
   const [tab, setTab] = useState(0);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
