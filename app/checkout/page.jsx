@@ -314,7 +314,7 @@ export default function CheckoutPage() {
               cartItems.map((item, idx) => (
                 <div key={idx} className="mb-2 flex items-center gap-2">
                   <Image
-                    src={item.icon || '/icons/ac.png'}
+                    src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${item.image}`}
                     alt={item.title}
                     width={40}
                     height={40}

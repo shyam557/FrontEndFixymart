@@ -1,4 +1,5 @@
 "use client";
+const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG 
 
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
@@ -292,7 +293,7 @@ useEffect(() => {
                       <div className="w-32 sm:w-38 h-[120px] sm:h-[130px] rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
                         <Image
                           // src={service.imgSrc || "/placeholder.jpg"}
-                          src={"http://localhost:3000/services?type=ac"}
+                          src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${svc.image}`}
                           alt={service.description || service.description}
                           width={300}
                           height={200}
