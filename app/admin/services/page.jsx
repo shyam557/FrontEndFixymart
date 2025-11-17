@@ -1,5 +1,6 @@
 "use client";
 const BACKEND_PUBLIC_API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL 
+const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG 
 
 import { Suspense } from "react";
 
@@ -256,7 +257,7 @@ function ServicesPageInner() {
                       <td className="px-4 py-2 text-center align-middle">
                         {svc.image? (
                           <Image
-                            src={`${BACKEND_PUBLIC_API_URL}${svc.image}`}
+                            src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${svc.image}`}
                             alt={svc.subcategory.name}
                             width={40}
                             height={40}
