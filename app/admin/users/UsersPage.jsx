@@ -94,7 +94,7 @@ import { fetchAllUsers } from "../../../src/lib/api/adminApi";
                                     (user.name && user.name.toLowerCase().includes(search.trim().toLowerCase()))
                                 )
                                 .map((user, idx) => (
-                                    <tr key={user.userId} className="border-b last:border-b-0 align-middle">
+                                    <tr key={idx} className="border-b last:border-b-0 align-middle">
                                         <td className="px-3 py-2 text-center align-middle">{idx + 1}</td>
                                         <td className="px-3 py-2 text-center align-middle">{user.id}</td>
                                         <td className="px-3 py-2 text-center align-middle">{user.username}</td>
@@ -126,5 +126,5 @@ import { fetchAllUsers } from "../../../src/lib/api/adminApi";
     );
 }
 
-export default UsersPage();
+export default UsersPage;
 

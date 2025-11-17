@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { createOneService, uploadServiceImage } from "../../../../src/lib/api/adminApi";
+import {  getSessionData } from "../../../../src/lib/auth/auth.js";
 
 
 const initialState = {
@@ -27,6 +28,15 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
 
   const [form, setForm] = useState(initialState);
   const [imagePreview, setImagePreview] = useState(null);
+  const [providerId, setProviderId] = useState(null);
+
+  // Get providerId from session data on mount
+  useEffect(() => {
+    const sessionData = getSessionData();
+    if (sessionData && sessionData.user.id) {
+      setProviderId(sessionData.user.id);
+    } 
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +69,11 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
       return;
     }
 
+    if (!providerId) {
+      alert('Provider ID not found. Please login again.');
+      return;
+    }
+
     try {
       let imageUrl = null;
       if (form.image && typeof form.image !== "string") {
@@ -69,9 +84,9 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
         imageUrl = form.image;
       }
 
-      // Use provider id (hardcoded now) and send imageUrl
+      // Use provider id from session data and send imageUrl
       const data = await createOneService(
-        "1ee209c7-333d-426d-976c-8f0c7ce46376",
+        providerId,
         form.name,
         imageUrl,
         Math.floor(form.price),

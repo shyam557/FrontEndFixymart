@@ -19,7 +19,7 @@ import { fetchOneCategories ,fetchOneSubCategoryServices } from "../../../src/li
 
 
 
-export default function AcRepairPage() {
+export default function SingleServiceSearch({dataF}) {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items || []);
   const [quantities, setQuantities] = useState({});
@@ -32,10 +32,14 @@ export default function AcRepairPage() {
 
 
 
-//sideBarSharing List
-    const sideBarItems = [
-  
-  ];
+  // sideBar items state
+  const [sideBarItems, setSideBarItems] = useState([]);
+  const slugify = (s) =>
+    String(s)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-_]/g, '');
 
   // 🧩 Fetch all subcategories, then all services
   useEffect(() => {
@@ -43,21 +47,13 @@ export default function AcRepairPage() {
       try {
         setLoading(true);
 
-        const data = await fetchOneCategories("4e4bb50a-3563-435f-bb41-4cb39e89109c");
-        const subCategories = data[0].subcategories;
-        console.log(data,subCategories);
+        const categoryData = await fetchOneCategories(dataF);
+        const subCategories = categoryData?.[0]?.subcategories || [];
+        console.log('all subcategories', subCategories);
 
-        //add all sub categories to the SideBarItems
-
-        sideBarItems.push(
-            ...subCategories.map((srv) => ({
-              label:srv.name,
-              key:srv.name
-
-            }))
-          );
-
-        console.log("Sidebar Items",sideBarItems);
+        // set sidebar items from fetched subcategories (use slug ids for scroll targets)
+        const sidebar = subCategories.map((srv) => ({ label: srv.name, key: slugify(srv.name) }));
+        setSideBarItems(sidebar);
 
 
         // // STEP 1: Get subcategories for a category (change categoryId if needed)
@@ -82,8 +78,8 @@ export default function AcRepairPage() {
               title:srv.description,
               category: sub.name, // attach category name for grouping
               price:srv.custom_price,
-              duration:"100min",
-              imgSrc:"image",
+              duration:srv.duration,
+              imgSrc:srv.image,
               provider_id:srv.provider_id,
               description:srv.description
 
@@ -103,7 +99,7 @@ export default function AcRepairPage() {
     };
 
     fetchAllServices();
-  }, []);
+  }, [dataF]);
 
   // 🧠 Group services by category
   const groupedServices = useMemo(() => {
@@ -117,15 +113,16 @@ export default function AcRepairPage() {
   console.log("these are grouped ",groupedServices);
 
 
-  const sectionRefs = useRef({});
+    const sectionRefs = useRef({});
 
-useEffect(() => {
-  Object.keys(groupedServices).forEach((cat) => {
-    if (!sectionRefs.current[cat]) {
-      sectionRefs.current[cat] = React.createRef();
-    }
-  });
-}, [groupedServices]);
+    useEffect(() => {
+      Object.keys(groupedServices).forEach((cat) => {
+        const id = slugify(cat);
+        if (!sectionRefs.current[id]) {
+          sectionRefs.current[id] = React.createRef();
+        }
+      });
+    }, [groupedServices]);
 
 
 
@@ -148,10 +145,10 @@ useEffect(() => {
     0
   );
 
-  const handleScrollTo = (category) => {
-    sectionRefs[category]?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+  const handleScrollTo = (key) => {
+    sectionRefs.current[key]?.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
     });
   };
 
@@ -220,93 +217,92 @@ useEffect(() => {
         </aside>
 
         <main className="flex-1 p-4 md:p-6 md:ml-64 space-y-10">
-          {Object.entries(groupedServices).map(([category, list]) => (
-            <section key={category} id={category} ref={sectionRefs[category]}>
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                {category}
-              </h2>
+          {Object.entries(groupedServices).map(([category, list]) => {
+            const id = slugify(category);
+            const ref = sectionRefs.current[id] || null;
+            return (
+              <section key={id} id={id} ref={ref}>
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">{category}</h2>
 
-              {list.length === 0 ? (
-                <p className="text-gray-500">No services available.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {list.map((service) => (
-                    <div
-                      key={service.id}
-                      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-between w-full max-h-[180px] sm:max-h-[260px] p-4 sm:p-4 gap-4"
-                    >
-                      {/* Left Content */}
-                      <div className="flex flex-col justify-between flex-1 text-[11px] sm:text-sm overflow-hidden h-full">
-                        <div>
-                          <h3 className="font-semibold text-gray-900 truncate sm:text-base text-[15px]">
-                            {service.title}
-                          </h3>
-                          <div className="flex items-center gap-1 text-gray-600 mt-[2px] text-[13px] sm:text-sm">
-                            <span className="text-yellow-500">★</span>
-                            <span className="text-yellow-600 font-medium">4.81</span>
-                            <span className="text-gray-400">(14K reviews)</span>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-gray-700 font-medium mt-[2px]">
-                            <span className="text-black font-semibold">₹{service.price}</span>
-                            <span className="text-gray-500">• {service.duration || "—"}</span>
-                          </div>
-                        </div>
-
-                        <div className="mt-1">
-                          <button onClick={() => { setSelectedService(service); setIsModalOpen(true); document.body.style.overflow = 'hidden'; }} className="text-purple-600 text-[12px] sm:text-sm hover:underline">
-                            View details
-                          </button>
-                        </div>
-
-                        <div className="mt-1">
-                          {quantities[service.id] ? (
-                            <div className="flex items-center border border-purple-600 rounded px-2 py-0.5 w-max">
-                              <button
-                                onClick={() => handleDecrement(service)}
-                                className="text-purple-600 px-1"
-                              >
-                                -
-                              </button>
-                              <span className="text-xs px-1">
-                                {quantities[service.id]}
-                              </span>
-                              <button
-                                onClick={() => handleIncrement(service)}
-                                className="text-purple-600 px-1"
-                              >
-                                +
-                              </button>
+                {list.length === 0 ? (
+                  <p className="text-gray-500">No services available.</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {list.map((service) => (
+                      <div
+                        key={service.id}
+                        className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-between w-full max-h-[180px] sm:max-h-[260px] p-4 sm:p-4 gap-4"
+                      >
+                        {/* Left Content */}
+                        <div className="flex flex-col justify-between flex-1 text-[11px] sm:text-sm overflow-hidden h-full">
+                          <div>
+                            <h3 className="font-semibold text-gray-900 truncate sm:text-base text-[15px]">
+                              {service.title}
+                            </h3>
+                            <div className="flex items-center gap-1 text-gray-600 mt-[2px] text-[13px] sm:text-sm">
+                              <span className="text-yellow-500">★</span>
+                              <span className="text-yellow-600 font-medium">4.81</span>
+                              <span className="text-gray-400">(14K reviews)</span>
                             </div>
-                          ) : (
-                            <button
-                              onClick={() => handleAdd(service)}
-                              className="text-purple-600 border border-purple-600 rounded px-3 py-1 text-[11px] sm:text-sm w-max"
-                            >
-                              book now
+
+                            <div className="flex items-center gap-2 text-gray-700 font-medium mt-[2px]">
+                              <span className="text-black font-semibold">₹{service.price}</span>
+                              <span className="text-gray-500">• {service.duration || "—"}</span>
+                            </div>
+                          </div>
+
+                          <div className="mt-1">
+                            <button onClick={() => { setSelectedService(service); setIsModalOpen(true); document.body.style.overflow = 'hidden'; }} className="text-purple-600 text-[12px] sm:text-sm hover:underline">
+                              View details
                             </button>
-                          )}
+                          </div>
+
+                          <div className="mt-1">
+                            {quantities[service.id] ? (
+                              <div className="flex items-center border border-purple-600 rounded px-2 py-0.5 w-max">
+                                <button
+                                  onClick={() => handleDecrement(service)}
+                                  className="text-purple-600 px-1"
+                                >
+                                  -
+                                </button>
+                                <span className="text-xs px-1">{quantities[service.id]}</span>
+                                <button
+                                  onClick={() => handleIncrement(service)}
+                                  className="text-purple-600 px-1"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleAdd(service)}
+                                className="text-purple-600 border border-purple-600 rounded px-3 py-1 text-[11px] sm:text-sm w-max"
+                              >
+                                book now
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Right Image */}
+                        <div className="w-32 sm:w-38 h-[120px] sm:h-[130px] rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
+                          <Image
+                            src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${service.imgSrc}`}
+                            alt={service.description || service.description}
+                            width={300}
+                            height={200}
+                            quality={100}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       </div>
-
-                      {/* Right Image */}
-                      <div className="w-32 sm:w-38 h-[120px] sm:h-[130px] rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
-                        <Image
-                          // src={service.imgSrc || "/placeholder.jpg"}
-                          src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${svc.image}`}
-                          alt={service.description || service.description}
-                          width={300}
-                          height={200}
-                          quality={100}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          ))}
+                    ))}
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </main>
       </div>
 
