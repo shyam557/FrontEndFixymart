@@ -18,6 +18,15 @@ export default function CartPage() {
     return acc;
   }, {});
 
+    // 🔥 Console log all grouped data category-wise
+  console.log("Grouped Cart Data:");
+  Object.entries(grouped).forEach(([category, items]) => {
+    console.log(`\n📌 Category: ${category}`);
+    items.forEach((item, index) => {
+      console.log(`   Service ${index + 1}:`, item);
+    });
+  });
+
   const handleCheckout = () => {
     router.push('/checkout');
   };

@@ -218,27 +218,58 @@ function SettingsPageContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {subcategories.map(sub => (
-                      <tr key={sub.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">{sub.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{sub.duration} mins</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₹{sub.base_price}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <button 
-                            className="text-blue-600 hover:text-blue-900 mr-4"
-                            onClick={() => {/* Edit subcategory handler */}}
-                          >
-                            Edit
-                          </button>
-                          <button 
-                            className="text-red-600 hover:text-red-900"
-                            onClick={() => {/* Delete subcategory handler */}}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                   {/* Add Subcategories Section */}
+{selectedCategory && (
+  <div className="mt-6">
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-lg font-semibold">
+        Subcategories for {selectedCategory.name}
+      </h3>
+      <button 
+        className="bg-green-500 text-white px-4 py-2 rounded"
+        onClick={() => setIsCreateSubcategoryModalOpen(true)}
+      >
+        Add Subcategory
+      </button>
+    </div>
+
+    {/* If NO SUBCATEGORIES */}
+    {(!subcategories || subcategories.length === 0) ? (
+      <div className="bg-white text-center text-gray-500 p-6 rounded-lg shadow">
+        No subcategories found.
+      </div>
+    ) : (
+      <div className="bg-white rounded-lg shadow">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Price</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+
+          {/* VALID tbody containing ONLY tr/td */}
+          <tbody className="divide-y divide-gray-200">
+            {subcategories.map(sub => (
+              <tr key={sub.id}>
+                <td className="px-6 py-4 whitespace-nowrap">{sub.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{sub.duration} mins</td>
+                <td className="px-6 py-4 whitespace-nowrap">₹{sub.base_price}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <button className="text-blue-600 hover:text-blue-900 mr-4">Edit</button>
+                  <button className="text-red-600 hover:text-red-900">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+)}
+
                   </tbody>
                 </table>
               </div>
@@ -269,5 +300,5 @@ function SettingsPageContent() {
 }
 
 
-export default SettingsPageContent();
+export default SettingsPageContent;
 

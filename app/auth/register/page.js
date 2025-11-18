@@ -180,21 +180,7 @@ export default function Register() {
           Create Account
         </button>
 
-        <div className="flex items-center my-4">
-          <hr className="flex-1" />
-          <span className="px-2 text-gray-400">Or continue with</span>
-          <hr className="flex-1" />
-        </div>
-
-        <button type="button" className="w-full flex items-center justify-center gap-2 border px-3 py-2 rounded hover:bg-gray-100">
-          <Image
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            width={20}
-            height={20}
-            alt="Google"
-          />
-          Continue with Google
-        </button>
+     
 
         <p className="text-center mt-4 text-gray-600">
           Already have an account?

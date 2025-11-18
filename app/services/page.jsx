@@ -23,7 +23,7 @@ export default function ServicesPage() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
 
-  return <SingleServiceSearch/>;
+  return <SingleServiceSearch data={type}/>;
   // return <PlumberPage/>;
 
   if (type === "ac") return <AcRepairPage />;

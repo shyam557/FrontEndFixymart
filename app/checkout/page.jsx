@@ -1,5 +1,7 @@
 ﻿'use client';
 
+const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG 
+
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -313,12 +315,13 @@ export default function CheckoutPage() {
             ) : (
               cartItems.map((item, idx) => (
                 <div key={idx} className="mb-2 flex items-center gap-2">
-                  <Image
+                  <h1>{item.image}</h1>
+                  {/* <Image
                     src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${item.image}`}
                     alt={item.title}
                     width={40}
                     height={40}
-                  />
+                  /> */}
                   <span>{item.title}</span>
                   <span className="ml-auto">₹{item.price} × {item.quantity || 1}</span>
                 </div>

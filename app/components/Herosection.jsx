@@ -70,11 +70,13 @@ export default function HeroSection({data} ) {
           key={cat.id}
           className="w-[100px] sm:w-[110px] md:w-[130px] bg-slate-100 rounded-md shadow-md flex flex-col items-center justify-center hover:shadow-xl cursor-pointer transition-transform duration-200 hover:scale-105 p-4"
           // onClick={() => handleClick(cat.name)}
-          onClick={() => handleClick("ac")}
+          // onClick={() => handleClick("ac")}
+          onClick={() => handleClick(cat.id)}
         >
           <div>{cat.icon}</div>
           <span className="text-xs text-[#4C51BF] font-medium mt-1 text-center">
             {cat.name}
+            {/* {cat.id} */}
             {/* {cat.subcategories[0].id} */}
           </span>
         </div>
