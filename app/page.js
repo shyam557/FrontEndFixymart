@@ -98,6 +98,7 @@ export default function Home() {
         </div>,
 
         <SingleService key={cat.id}
+  id={cat.id} 
   categoryName={cat.name} 
   subcategoryId={cat.subcategories[0].id} 
          />

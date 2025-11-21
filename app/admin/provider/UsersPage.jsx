@@ -5,7 +5,7 @@ import { Search, Calendar, Eye, SquarePen } from "lucide-react";
 
 
 
-import { fetchAllUsers } from "../../../src/lib/api/adminApi";
+import { fetchAllProviders } from "../../../src/lib/api/adminApi";
 
 
 
@@ -25,7 +25,7 @@ import { fetchAllUsers } from "../../../src/lib/api/adminApi";
         // const response = await fetch("http://localhost:5000/api/sidebar");
         // if (!response.ok) throw new Error("Failed to fetch userData");
 
-        const data = await fetchAllUsers();
+        const data = await fetchAllProviders();
 
 
         console.log("Fetched data:", data);
@@ -77,6 +77,7 @@ import { fetchAllUsers } from "../../../src/lib/api/adminApi";
                             <tr>
                                 <th className="px-3 py-3 whitespace-nowrap text-center">Sr. No.</th>
                                 <th className="px-3 py-3 whitespace-nowrap text-center">User ID</th>
+                                <th className="px-3 py-3 whitespace-nowrap text-center">Provider ID</th>
                                 <th className="px-3 py-3 whitespace-nowrap text-center">Username</th>
                                 <th className="px-3 py-3 whitespace-nowrap text-center">Name</th>
                                 <th className="px-3 py-3 whitespace-nowrap text-center">Phone</th>
@@ -96,15 +97,16 @@ import { fetchAllUsers } from "../../../src/lib/api/adminApi";
                                 .map((user, idx) => (
                                     <tr key={idx} className="border-b last:border-b-0 align-middle">
                                         <td className="px-3 py-2 text-center align-middle">{idx + 1}</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user_id}</td>
                                         <td className="px-3 py-2 text-center align-middle">{user.id}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.username}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.name}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.phone_number}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.email}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.role}</td>
-                                        <td className="px-3 py-2 text-center align-middle">{user.created_at}</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user.username}</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user.name}</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user.phone}</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user.email}</td>
+                                        <td className="px-3 py-2 text-center align-middle">Provider</td>
+                                        <td className="px-3 py-2 text-center align-middle">{user.user.created_at}</td>
                                         <td className="px-3 py-2 text-center align-middle">
-                                            <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-600">{user.is_verified}</span>
+                                            <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-600">{user.status}</span>
                                         </td>
                                         <td className="px-3 py-2 text-center align-middle">
                                             <div className="flex items-center justify-center gap-2">

@@ -1,0 +1,43 @@
+export const usersData = [
+	{
+		userId: "29793",
+		username: "manishsharma648783",
+		name: "Dragoon",
+		phone: "+91 7002990396",
+		email: "manishsharma...",
+		registerType: "Google",
+		date: "12 Aug 2025 at 5:10 pm",
+		status: "Active",
+	},
+	{
+		userId: "29792",
+		username: "furkazul",
+		name: "Furkazul Ali",
+		phone: "+1 8638091592",
+		email: "jakirhussainn...",
+		registerType: "Manual",
+		date: "12 Aug 2025 at 5:05 pm",
+		status: "Active",
+	},
+	{
+		userId: "29791",
+		username: "Alex0477",
+		name: "Александр Ал...",
+		phone: "+373 373 79373875",
+		email: "mr.vinni1977@...",
+		registerType: "Manual",
+		date: "12 Aug 2025 at 5:02 pm",
+		status: "Active",
+	},
+	{
+		userId: "29790",
+		username: "akashnautiyal555",
+		name: "MOBI TECH G...",
+		phone: "+91 7002990396",
+		email: "akashnautiyal...",
+		registerType: "Google",
+		date: "12 Aug 2025 at 4:57 pm",
+		status: "Active",
+	},
+	// ...add more mock users as needed
+];

@@ -1,7 +1,7 @@
 "use client";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL ?? 'http://localhost:3002/api/v1';
 
-import { getToken } from "../../lib/auth/auth";
+import { getToken, getSessionData } from "../../lib/auth/auth";
 
 
 // app/admin/users/page.tsx or page.jsx
@@ -44,13 +44,13 @@ export async function fetchAllCategories() {
   return await res.json();
 }
 
-export async function deleteCategory(id) {
-  const res = await fetch(`${API_URL}/categories/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-  });
-  return await res.json();
-}
+// export async function deleteCategory(id) {
+//   const res = await fetch(`${API_URL}/categories/${id}`, {
+//     method: "PATCH",
+//     headers: { "Content-Type": "application/json" },
+//   });
+//   return await res.json();
+// }
 export async function fetchOneCategories(id) {
 
   const res = await fetch(`${API_URL}/categories?id=${id}`, {
@@ -77,6 +77,24 @@ export async function fetchAllServices() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(),
   });
+  return await res.json();
+}
+
+export async function deleteAServices(id) {
+  const dta = getSessionData();
+  const providerId = dta.user.id;
+
+  const res = await fetch(`${API_URL}/services/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      providerId: providerId,  // 👈 THIS IS THE IMPORTANT FIX
+    }),
+  });
+
   return await res.json();
 }
 
@@ -119,10 +137,23 @@ export async function createOneService(providerId,description,image,customPrice,
 }
 
 
+
 //for user
 export async function fetchAllUsers() {
 
   const res = await fetch(`${API_URL}/users`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(),
+  });
+  return await res.json();
+}
+
+
+//for provider
+export async function fetchAllProviders() {
+
+  const res = await fetch(`${API_URL}/providers`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(),
@@ -143,7 +174,7 @@ export async function createCategory(categoryData) {
       icon: categoryData.icon,
     }),
   });
-      // is_active: categoryData.is_active
+     // is_active: categoryData.is_active
   
   if (!res.ok) {
     const error = await res.json();
@@ -153,6 +184,54 @@ export async function createCategory(categoryData) {
   return await res.json();
 }
 
+export async function updateCategory(id,name,description,icon) { 
+  const res = await fetch(`${API_URL}/categories/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+    },
+    body: JSON.stringify({
+      name: name,
+      description: description,
+      icon: icon,
+    }),
+  });
+      // is_active: categoryData.is_active
+  
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to update category');
+  }
+  
+  return await res.json();
+}
+
+
+export async function deleteCategory(id) { 
+  const res = await fetch(`${API_URL}/categories/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+    },
+    body: JSON.stringify({
+    
+    }),
+  });
+      // is_active: categoryData.is_active
+  
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to delete category');
+  }
+  
+  return await res.json();
+}
+
+
+
+//subcategory api
 export async function createSubCategory(subCategoryData) {
   const res = await fetch(`${API_URL}/categories/${subCategoryData.category_id}/subcategories`, {
     method: "POST",
@@ -176,6 +255,51 @@ export async function createSubCategory(subCategoryData) {
   return await res.json();
 }
 
+
+export async function updateSubCategory(id,name,duration,base_price) { 
+  const res = await fetch(`${API_URL}/categories/subcategories/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+    },
+    body: JSON.stringify({
+      name: name,
+      duration: duration,
+      base_price: base_price,
+    }),
+  });
+      // is_active: categoryData.is_active
+  
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to update subcategory');
+  }
+  
+  return await res.json();
+}
+
+
+export async function deleteSubCategory(id) { 
+  const res = await fetch(`${API_URL}/categories/subcategories/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+    },
+    body: JSON.stringify({
+    
+    }),
+  });
+      // is_active: categoryData.is_active
+  
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to delete subcategory');
+  }
+  
+  return await res.json();
+}
 
 //fetch orders of a perticular user which get logged in
 export async function fetchAllOrdersOfUser() {
@@ -213,7 +337,7 @@ export async function updateOrder(orderId, orderData) {
   console.log("Updating order:", orderId, orderData); 
   const res = await fetch(`${API_URL}/bookings/${orderId}`, {
     method: "PATCH",
-   headers: {
+   headers: { 
       "Content-Type": "application/json",
       "Authorization": `Bearer ${getToken()}`
 
@@ -240,3 +364,24 @@ export async function updateOrderStatus(orderId, orderData) {
   });
   return await res.json();
 }
+
+
+//set provider for order
+export async function updateProviderToOrder(orderId, providerId) {
+
+  console.log("Updating order:", orderId, providerId); 
+  const res = await fetch(`${API_URL}/bookings/${orderId}`, {
+    method: "PATCH",
+   headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
+
+    },
+    body: JSON.stringify({
+      providerId: providerId,
+    }),
+  });
+  return await res.json();
+}
+
+

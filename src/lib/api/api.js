@@ -46,6 +46,17 @@ export async function fetchOneCategories(id) {
   return await res.json();
 }
 
+export async function fetchCategoryWithAllSubCategories(id) {
+
+  const res = await fetch(`${API_URL}/categories/${id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(),
+  });
+  return await res.json();
+}
+
+
 export async function fetchOneSubCategoryServices(subcategoryId) {
   const res = await fetch(`${API_URL}/services?subcategoryId=${subcategoryId}`, {
     method: "GET",

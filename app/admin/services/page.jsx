@@ -12,6 +12,8 @@ import AddServiceForm from "./components/AddServiceForm";
 import { useAddServiceMutation } from "./api/useAddService.hook";
 import EditServiceForm from "./components/EditServiceForm";
 import Image from "next/image";
+
+
 import {
   Menu,
   ChevronDown,
@@ -23,7 +25,7 @@ import {
 import { servicesData } from "./data/servicesData";
 
 
-import { fetchAllCategories, fetchAllServices } from "../../../src/lib/api/adminApi";
+import { deleteAServices, fetchAllCategories, fetchAllServices } from "../../../src/lib/api/adminApi";
 
 
 
@@ -307,6 +309,8 @@ function ServicesPageInner() {
                             className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100"
                             onClick={() => {
                               if (window.confirm('Are you sure you want to delete this service?')) {
+
+                                deleteAServices(svc.id);
                                 setServices(prev => prev.filter(item => item.id !== svc.id));
                               }
                             }}

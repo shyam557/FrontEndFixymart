@@ -1,5 +1,7 @@
 "use client";
 
+const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG 
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,7 +12,9 @@ export default function ScrollingCard( props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+  
     async function loadServices() {
+      console.log("props in scrolling card",props); 
       const data = await fetchOneSubCategoryServices(props.subcategoryId);
       setServices(data);
       setLoading(false);
@@ -36,7 +40,7 @@ if (!services || services.length === 0) return <p>No services found.</p>;
           {props.categoryName}
         </h2>
         <Link
-          href="/services?type=ac"
+          href={`/services?type=${props.id}`}
           className="text-sm px-4 py-3 rounded text-blue-600 border border-gray-200 hover:underline whitespace-nowrap"
         >
           See all
@@ -50,7 +54,7 @@ if (!services || services.length === 0) return <p>No services found.</p>;
         {services.map((service) => (
           <Link
             key={service.id || service.title}
-            href="/"
+            href={`/services?type=${props.id}`}
             // href={`/card/ACservices/${service.title.replace(/\s+/g, "-").toLowerCase()}`}
             className="flex-shrink-0 w-[160px] h-[200px] sm:w-[190px] sm:h-[230px] md:w-[220px] md:h-[260px] lg:w-[240px] lg:h-[280px] 
                        bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col items-center 
@@ -62,7 +66,10 @@ if (!services || services.length === 0) return <p>No services found.</p>;
             </div>
             <div className="relative w-full flex-1 flex items-center justify-center">
               <Image
-                src={"http://localhost:3000/services?type=ac"}
+                src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${service.image}`}
+              
+                            // src={service.image}
+                // src={"http://localhost:3000/services?type=ac"}
                 // src={service.image}
                 alt={service.description}
                 width={140}
