@@ -6,7 +6,7 @@ import Link from "next/link";
 import axios from "axios";
 
 import { useRouter } from "next/navigation";   // <-- FIX ADDED
-import { registerUser } from "../../../src/lib/api/api";
+import { registerUser } from "../../../../src/lib/api/adminApi";
 
 export default function Register() {
 
