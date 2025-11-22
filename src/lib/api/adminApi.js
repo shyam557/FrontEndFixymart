@@ -14,11 +14,11 @@ function UsersList() {
   return <div>Current filter: {filter ?? "none"}</div>;
 }
 
-export async function loginUser(email, password) {
+export async function loginUser(phoneNumber, password) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ phoneNumber, password }),
   });
   return await res.json();
 }

@@ -18,6 +18,8 @@ export default function Register() {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
+    role: "customer",
+    profileImage: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +46,8 @@ export default function Register() {
         form.name,
         form.email,
         form.phoneNumber,
+        form.role,
+        form.profileImage,
         form.password
       );
 
@@ -112,7 +116,27 @@ export default function Register() {
           />
         </div>
 
-       
+        <select
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          required
+        >
+          <option value="customer">Customer</option>
+          <option value="provider">Provider</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <input
+          name="profileImage"
+          type="url"
+          placeholder="Profile Image URL (optional)"
+          value={form.profileImage}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+        />
+
         <div className="relative">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
             <Lock size={20} />
