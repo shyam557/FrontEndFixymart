@@ -6,14 +6,13 @@ import { Suspense } from "react";
 
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import QueryProvider from "../../QueryProvider";
 import { useServices } from "./hooks/useServices";
 import AddServiceForm from "./components/AddServiceForm";
 import { useAddServiceMutation } from "./api/useAddService.hook";
 import EditServiceForm from "./components/EditServiceForm";
 import Image from "next/image";
-
-
 import {
   Menu,
   ChevronDown,
@@ -25,7 +24,7 @@ import {
 import { servicesData } from "./data/servicesData";
 
 
-import { deleteAServices, fetchAllCategories, fetchAllServices } from "../../../src/lib/api/adminApi";
+import { fetchAllCategories, fetchAllServices, deleteService, fetchAllUsers, fetchAllOrders } from "../../../src/lib/api/adminApi";
 
 
 
@@ -60,7 +59,25 @@ function ServicesPageInner() {
   const [isLoading, setIsLoading] = useState([]);
   const [error, setError] = useState([]);
   const [services, setServices] = useState([]);
+  const [perPage, setPerPage] = useState(20);
+  const [showFilters, setShowFilters] = useState(false);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalOrders: 0,
+    totalServices: 0,
+    todaysNewUsers: 0,
+    todaysOrders: 0,
+    categoryCounts: {
+      acAppliance: 0,
+      plumber: 0,
+      electrician: 0,
+      carpenter: 0,
+      cleaning: 0,
+      painter: 0,
+    },
+  });
   const addServiceMutation = useAddServiceMutation();
+  const router = useRouter();
 
 
   const[fetchCategories,setFetchCategories] = useState([]);
@@ -75,58 +92,85 @@ function ServicesPageInner() {
 
   useEffect(() => {
     const fetchServicesData = async () => {
+      try {
+        // fetch all categories and subcategories
+        const categoriesData = await fetchAllCategories();
 
-
-//here fetch all categories and subcategories
-        const data = await fetchAllCategories();
-
-          data.map((cat, index) => (
-            fetchCategories.push({
-              id:cat.id,
-              name:cat.description
-            }),
-
-
-            //now add subcategory
-            cat.subcategories.map((subcat,index)=>(
-                fetchSubCategories.push({
-                  id:subcat.id,
-                  name:subcat.name
-                })
-              ))
-
-
+        categoriesData.map((cat) => (
+          fetchCategories.push({ id: cat.id, name: cat.description }),
+          cat.subcategories.map((subcat) =>
+            fetchSubCategories.push({ id: subcat.id, name: subcat.name })
+          )
         ));
 
-          // console.log("all data",data, fetchCategories ,fetchSubCategories);
+        // Fetch services, users and orders in parallel
+        const [servicesData, usersData, ordersData] = await Promise.all([
+          fetchAllServices(),
+          fetchAllUsers(),
+          fetchAllOrders(),
+        ]);
 
-
-
-
-
-      try {
-        // const response = await fetch("http://localhost:5000/api/sidebar");
-        // if (!response.ok) throw new Error("Failed to fetch userData");
-
-        const data = await fetchAllServices();
-
-        // apiServices=data;
-
-        setServices(data);
+        setServices(servicesData || []);
         setIsLoading(false);
-        // error=false;
         setError(false);
-        console.log("Fetched data:", data);
 
-        // setUserData(data);
-        // setLoading(false);
+        // compute statistics
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const totalUsers = Array.isArray(usersData) ? usersData.length : 0;
+        const totalOrders = Array.isArray(ordersData) ? ordersData.length : 0;
+        const totalServices = Array.isArray(servicesData) ? servicesData.length : 0;
+
+        const todaysNewUsers = Array.isArray(usersData)
+          ? usersData.filter((u) => {
+              const created = u.created_at ? new Date(u.created_at) : u.createdAt ? new Date(u.createdAt) : null;
+              return created && created >= todayStart;
+            }).length
+          : 0;
+
+        const todaysOrders = Array.isArray(ordersData)
+          ? ordersData.filter((o) => {
+              const created = o.created_at ? new Date(o.created_at) : o.createdAt ? new Date(o.createdAt) : null;
+              return created && created >= todayStart;
+            }).length
+          : 0;
+
+        // compute counts for specific categories
+        const categoryCounts = {
+          acAppliance: 0,
+          plumber: 0,
+          electrician: 0,
+          carpenter: 0,
+          cleaning: 0,
+          painter: 0,
+        };
+
+        (servicesData || []).forEach((svc) => {
+          const catName = (
+            svc.subcategory?.category?.name || svc.subcategory?.name || svc.category || svc.description || ""
+          ).toString().toLowerCase();
+
+          if (catName.includes("ac") || catName.includes("appliance") || catName.includes("ac & appliance") ) categoryCounts.acAppliance++;
+          if (catName.includes("plumb")) categoryCounts.plumber++;
+          if (catName.includes("electric")) categoryCounts.electrician++;
+          if (catName.includes("carpent")) categoryCounts.carpenter++;
+          if (catName.includes("clean")) categoryCounts.cleaning++;
+          if (catName.includes("paint")) categoryCounts.painter++;
+        });
+
+        setStats({
+          totalUsers,
+          totalOrders,
+          totalServices,
+          todaysNewUsers,
+          todaysOrders,
+          categoryCounts,
+        });
       } catch (err) {
         console.error("Error:", err);
-        // setError(err.message);
         setIsLoading(false);
         setError(true);
-
-        // isLoading=false;
       }
     };
 
@@ -137,77 +181,174 @@ function ServicesPageInner() {
 
 
 
-
-
-
-
-
-
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <main className="p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
-            All Services
-          </h1>
-          {/* Search Bar */}
-          <div className="mb-4">
-            <div className="relative w-full max-w-md">
-              <input
-                type="text"
-                placeholder="Search services..."
-                // value={search}
-                // onChange={e => setSearch(e.target.value)}
-                className="pl-10 pr-4 py-2 rounded border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 bg-gray-50 text-sm w-full"
-              />
-              <svg
-                className="absolute left-2 top-2.5 w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
+        <div>
+          {/* Service Category Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/ac')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/ac'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">AC Services</p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.acAppliance.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                <span className="text-blue-600">❄️</span>
+              </div>
+            </div>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/plumber')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/plumber'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">Plumber </p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.plumber.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
+                <span className="text-green-600">🚰</span>
+              </div>
+            </div>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/electrician')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/electrician'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">Electrician </p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.electrician.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center">
+                <span className="text-yellow-600">⚡</span>
+              </div>
+            </div>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/carpenter')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/carpenter'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">Carpenter</p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.carpenter.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
+                <span className="text-orange-600">🪚</span>
+              </div>
+            </div>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/cleaning')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/cleaning'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">Cleaning </p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.cleaning.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
+                <span className="text-teal-600">🧹</span>
+              </div>
+            </div>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push('/admin/services/painter')}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push('/admin/services/painter'); }}
+              className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
+            >
+              <div>
+                <p className="text-sm text-gray-500">Painter</p>
+                <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.painter.toLocaleString()}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
+                <span className="text-purple-600">🎨</span>
+              </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3 items-center">
-            {/* Category Filter */}
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="border border-gray-200 rounded px-3 py-2 text-sm bg-white focus:outline-none"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            {/* Status Filter */}
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="border border-gray-200 rounded px-3 py-2 text-sm bg-white focus:outline-none"
-            >
-              {statusOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            {/* Add New Service Button */}
-            <button
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold shadow transition-colors text-sm"
-              onClick={() => setShowAddModal(true)}
-            >
-              <Plus className="w-4 h-4" /> Add New Service
-            </button>
+          {/* Header block moved below category cards */}
+          <div className="bg-white rounded-t-xl shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800">Recently Services</h1>
+                <p className="text-sm text-gray-500 mt-1">Manage and track recently added services</p>
+              </div>
+
+              <div className="w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  className="pl-10 pr-4 py-2 rounded border border-gray-200 focus:outline-none bg-gray-50 text-sm w-full"
+                />
+                <svg
+                  className="absolute left-2 top-2.5 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="border-b border-gray-200 my-4" />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                {["All", "Active", "Inactive"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setStatus(tab)}
+                    className={`px-3 py-2 text-sm font-medium ${status === tab ? "text-blue-600 border-b-2 border-blue-600 -mb-[1px]" : "text-gray-500 hover:text-gray-700"}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 border border-gray-200 rounded px-2 py-1 bg-white">
+                  <span className="text-sm text-gray-600">Per page:</span>
+                  <select value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className="px-2 py-1 text-sm bg-white outline-none">
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowFilters((s) => !s)}
+                  className="ml-2 px-3 py-2 border border-gray-200 rounded bg-white text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  Show Filters
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         {/* Services Table */}
-        <div className="w-full overflow-x-auto rounded-xl bg-white shadow">
+        <div className="w-full overflow-x-auto rounded-b-xl bg-white shadow">
           <table className="w-full min-w-[900px] text-sm">
             <thead className="bg-blue-50 text-blue-900 font-semibold">
               <tr>
@@ -248,13 +389,13 @@ function ServicesPageInner() {
                     (svc) => category === "All" || svc.category === category
                   )
                   .filter((svc) => status === "All" || svc.status === status)
-                  .map((svc) => (
+                  .map((svc, index) => (
                     <tr
                       key={svc.id}
                       className="border-b last:border-b-0 align-middle"
                     >
                       <td className="px-4 py-2 text-center align-middle">
-                        {svc.id}
+                        S{String(index + 1).padStart(2, '0')}
                       </td>
                       <td className="px-4 py-2 text-center align-middle">
                         {svc.image? (
@@ -307,11 +448,16 @@ function ServicesPageInner() {
                           </button>
                           <button
                             className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100"
-                            onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this service?')) {
-
-                                deleteAServices(svc.id);
-                                setServices(prev => prev.filter(item => item.id !== svc.id));
+                            onClick={async () => {
+                              if (!window.confirm('Are you sure you want to delete this service?')) return;
+                              try {
+                                await deleteService(svc.id);
+                                // refresh list from backend to keep in sync
+                                const latest = await fetchAllServices();
+                                setServices(latest);
+                              } catch (err) {
+                                console.error('Failed to delete service', err);
+                                alert('Failed to delete service. See console for details.');
                               }
                             }}
                           >

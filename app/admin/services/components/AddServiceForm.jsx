@@ -46,6 +46,11 @@ export default function AddServiceForm({ subcategories, onSubmit, onCancel }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Only allow image files
+      if (!file.type.startsWith('image/')) {
+        alert('Only image files are allowed');
+        return;
+      }
       setForm((prev) => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
     }

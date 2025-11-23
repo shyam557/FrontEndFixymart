@@ -79,7 +79,9 @@ function SettingsPageContent() {
           status: cat.is_active ? "Active" : "Inactive",
           subcategories: Array.isArray(cat.subcategories) ? cat.subcategories : [],
         }));
-        setCategories(normalized);
+        // Sort by order field
+        const sorted = normalized.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        setCategories(sorted);
         setIsLoading(false);
       } catch (err) {
         console.error("Failed to fetch categories:", err);

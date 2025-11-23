@@ -32,23 +32,38 @@ export default function Login() {
 
   /* ------------------ FIREBASE OTP SETUP ------------------ */
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        { size: "invisible" }
-      );
+    // Only initialize Recaptcha if running in browser and firebase `auth` is available
+    if (typeof window !== "undefined" && auth && !window.recaptchaVerifier) {
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+      } catch (e) {
+        // If Recaptcha initialization fails, log and continue — do not crash the app
+        console.error('Recaptcha initialization failed:', e);
+      }
     }
   }, []);
 
   /* ------------------ SEND OTP ------------------ */
   const sendOtp = async () => {
     try {
+      if (!auth) {
+        alert('Authentication not initialized. Please check Firebase configuration.');
+        return;
+      }
+
       const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        alert('reCAPTCHA verifier not ready. Please refresh the page and try again.');
+        return;
+      }
 
       const confirmation = await signInWithPhoneNumber(
         auth,
-        "+91"+form.phoneNumber,
+        "+91" + form.phoneNumber,
         appVerifier
       );
 

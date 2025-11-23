@@ -98,6 +98,11 @@ export async function deleteAServices(id) {
   return await res.json();
 }
 
+// Backwards-compatible alias: other modules expect `deleteService`.
+export async function deleteService(id) {
+  return await deleteAServices(id);
+}
+
 // New: upload image file (returns { filename, url, path } from backend)
 export async function uploadServiceImage(file) {
   const form = new FormData();
