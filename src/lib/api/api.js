@@ -7,20 +7,23 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 
-export async function loginUser(email, password) {
+export async function loginUser(phoneNumber, password,token) {
+
+  console.log("API loginUser called with:", phoneNumber, password, token);
+  
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ phoneNumber, password, token }),
   });
-  return await res.json();
+  return await res.json(); 
 }
 
-export async function registerUser(name, email,phoneNumber,role, profileImage, password) {
+export async function registerUser(name, email,phoneNumber,  password) {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email,phoneNumber, role, profileImage, password }),
+    body: JSON.stringify({ name, email,phoneNumber, "role":"customer", "profileImage":"", password }),
   });
   return await res.json();
 }
@@ -45,6 +48,17 @@ export async function fetchOneCategories(id) {
   });
   return await res.json();
 }
+
+export async function fetchCategoryWithAllSubCategories(id) {
+
+  const res = await fetch(`${API_URL}/categories/${id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(),
+  });
+  return await res.json();
+}
+
 
 export async function fetchOneSubCategoryServices(subcategoryId) {
   const res = await fetch(`${API_URL}/services?subcategoryId=${subcategoryId}`, {

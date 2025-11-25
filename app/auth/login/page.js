@@ -1,27 +1,27 @@
 "use client";
-import Image from "next/image";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Mail, Lock } from "lucide-react";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import axios from "axios";
 
 import { loginUser } from "../../../src/lib/api/api";
-import { setSessionData,getSessionData, setToken } from "../../../src/lib/auth/auth";
+import { setSessionData, setToken } from "../../../src/lib/auth/auth";
 
-// Debug imported values to help trace runtime import issues
-// If you see 'storeData is not a function' in the console, this will show what was imported.
-console.log('auth imports:', { storeData: setSessionData, getData: getSessionData, setToken });
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../../firebase/firebase";
 
 export default function Login() {
   const router = useRouter();
+
   const [form, setForm] = useState({
-    email: "",
+    phoneNumber: "",
     password: "",
   });
+
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* ------------------ HANDLE INPUT ------------------ */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -30,113 +30,145 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  /* ------------------ FIREBASE OTP SETUP ------------------ */
+  useEffect(() => {
+    // Only initialize Recaptcha if running in browser and firebase `auth` is available
+    if (typeof window !== "undefined" && auth && !window.recaptchaVerifier) {
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+      } catch (e) {
+        // If Recaptcha initialization fails, log and continue — do not crash the app
+        console.error('Recaptcha initialization failed:', e);
+      }
+    }
+  }, []);
+
+  /* ------------------ SEND OTP ------------------ */
+  const sendOtp = async () => {
+    try {
+      if (!auth) {
+        alert('Authentication not initialized. Please check Firebase configuration.');
+        return;
+      }
+
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        alert('reCAPTCHA verifier not ready. Please refresh the page and try again.');
+        return;
+      }
+
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        "+91" + form.phoneNumber,
+        appVerifier
+      );
+
+      window.confirmationResult = confirmation;
+      alert("OTP sent successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send OTP");
+    }
+  };
+
+  /* ------------------ VERIFY OTP + LOGIN ------------------ */
+  const verifyOtp = async () => {
     try {
       setLoading(true);
 
-     
-       const data = await loginUser(form.email, form.password);
-       console.log("Login response data:", data);
-    if (data.access_token) {
-      setToken(data.access_token);
-          setSessionData(data);
-          // getData();
+      // Step 1: Verify the OTP with Firebase
+      const result = await window.confirmationResult.confirm(otp);
 
-      // if (typeof storeData === 'function') {
-      //   try {
-      //   } catch (err) {
-      //     console.warn('storeData threw an error:', err);
-      //   }
-      // } else {
-      //   console.warn('storeData is not a function:', storeData);
-      // }
+      // Step 2: Get Firebase ID token
+      const idToken = await result.user.getIdToken(true);
 
-      await alert("LogIn successful!.");
-      console.log("All the data:", getSessionData());
+      // Step 3: Send phone + password + idToken to backend
+      const response = await loginUser(form.phoneNumber, form.password, idToken);
 
-      router.push("../../");
-    } else {
-      alert(data.message || "Error signing up");
-    }
-
-      // alert(data.message || "Login successful!");
-      // router.push("/"); // ✅ Redirect after login
-    // alert(errorMsg);
+      if (response.access_token) {
+        setToken(response.access_token);
+        setSessionData(response);
+        // alert("OTP Login Successful!");
+        router.push("../../");
+      } else {
+        alert(response.message || "OTP login failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Invalid OTP. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-      <div className="mb-4">
-        <Link href="/" className="text-gray-500 mb-2 hover:underline px-12">
-          &larr; Back to Home
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+
+      <div id="recaptcha-container"></div>
+
+      <h1 className="text-3xl font-bold mb-6">Phone Login</h1>
+
+      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm">
+
+        {/* PHONE NUMBER INPUT */}
+        <label className="block text-sm font-medium mb-1">Phone Number</label>
+        <input
+          type="text"
+          name="phoneNumber"
+          value={form.phoneNumber}
+          onChange={handleChange}
+          placeholder="XXXXXXXXXX"
+          className="w-full border px-3 py-2 rounded mb-4"
+        />
+
+        {/* PASSWORD INPUT */}
+        <label className="block text-sm font-medium mb-1">Password</label>
+        <input
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          placeholder="Enter Password"
+          className="w-full border px-3 py-2 rounded mb-4"
+        />
+
+        {/* SEND OTP */}
+        <button
+          onClick={sendOtp}
+          className="w-full bg-blue-600 text-white py-2 rounded mb-4 hover:bg-blue-700"
+        >
+          Send OTP
+        </button>
+
+        {/* OTP INPUT */}
+        <label className="block text-sm font-medium mb-1">Enter OTP</label>
+        <input
+          type="text"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          placeholder="Enter OTP"
+          className="w-full border px-3 py-2 rounded mb-4"
+        />
+
+        {/* VERIFY OTP */}
+        <button
+          onClick={verifyOtp}
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        >
+          {loading ? "Verifying..." : "Verify OTP & Login"}
+        </button>
+      </div>
+
+      <p className="mt-6 text-gray-700">
+        Don’t have an account?{" "}
+        <Link href="register" className="text-purple-600 font-medium">
+          Register
         </Link>
-        <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
-        <p className="text-center text-gray-500 mb-4">
-          Sign in to your account to continues
-        </p>
-      </div>
-      <div className="w-full max-w-md bg-white rounded-2xl p-8 shadow">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-1">Email</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <Mail size={20} />
-              </span>
-              <input
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 pl-10 rounded focus:outline-none"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-1">Password</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <Lock size={20} />
-              </span>
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 pl-10 rounded focus:outline-none"
-                required
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 mt-2 bg-purple-500 text-white font-semibold rounded-md hover:bg-purple-600 transition"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-
-
-
-        <p className="text-center mt-4 text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="register"
-            className="text-purple-600 hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
-      </div>
+      </p>
     </div>
   );
 }

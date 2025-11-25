@@ -13,13 +13,13 @@ import { useRouter } from 'next/navigation';
 import ServiceModal from "../details/ServiceModal";
 import ServiceDetail from "../details/ServiceDetail";
 
-import { fetchOneCategories ,fetchOneSubCategoryServices } from "../../../src/lib/api/api";
+import { fetchCategoryWithAllSubCategories ,fetchOneSubCategoryServices } from "../../../src/lib/api/api";
 // import { useEffect, useState } from 'react';
 // import React, { useEffect, useRef, useMemo, useState } from "react";
 
 
 
-export default function SingleServiceSearch({dataF}) {
+export default function SingleServiceSearch({data}) {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items || []);
   const [quantities, setQuantities] = useState({});
@@ -47,8 +47,13 @@ export default function SingleServiceSearch({dataF}) {
       try {
         setLoading(true);
 
-        const categoryData = await fetchOneCategories(dataF);
-        const subCategories = categoryData?.[0]?.subcategories || [];
+        console.log(data)
+
+        const categoryData = await fetchCategoryWithAllSubCategories(data);
+        console.log('all subcategories1', categoryData);
+        
+
+        const subCategories = categoryData?.subcategories || [];
         console.log('all subcategories', subCategories);
 
         // set sidebar items from fetched subcategories (use slug ids for scroll targets)
@@ -99,7 +104,7 @@ export default function SingleServiceSearch({dataF}) {
     };
 
     fetchAllServices();
-  }, [dataF]);
+  }, [data]);
 
   // 🧠 Group services by category
   const groupedServices = useMemo(() => {

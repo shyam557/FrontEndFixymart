@@ -1,17 +1,29 @@
 "use client";
-import React from "react";
-import AdminDashboard from './dashboard/dashboard';
+
+import React, { useEffect } from "react";
+import AdminDashboard from "./dashboard/dashboard";
 import { Suspense } from "react";
+import { checkLogIn } from "../../src/lib/auth/auth";
+import { useRouter } from "next/navigation";
 
+export default function Admin() {
+  const router = useRouter();
 
-export default function admin() {
+  useEffect(() => {
+    const validate = async () => {
+      const loggedIn = await checkLogIn();
+
+      if (!loggedIn) {
+        router.replace("/admin/login");
+      }
+    };
+
+    validate();
+  }, [router]);
+
   return (
-  <Suspense fallback={<div>Loading orders...</div>}>
-	<AdminDashboard/>
-  </Suspense>
+    <Suspense fallback={<div>Loading orders...</div>}>
+      <AdminDashboard />
+    </Suspense>
   );
 }
-
-	// export default function AdminPage() {
-	// 	return <AdminDashboard />;
-	// }

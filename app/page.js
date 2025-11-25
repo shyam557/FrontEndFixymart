@@ -24,6 +24,11 @@ export default function Home() {
      const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleClick = (name) => {
+    // simple placeholder click handler — adjust navigation as needed
+    console.log("Category clicked:", name);
+  };
+
   useEffect(() => {
     async function loadCategories() {
       const data = await fetchAllCategories();
@@ -83,26 +88,34 @@ export default function Home() {
              {/* <Mostservice /> */}
 
 
+{categories.map((cat, index) => {
+  const firstSubId = cat?.subcategories?.[0]?.id ?? null;
 
- {categories.map((cat) => (
+  return (
+    <div key={`cat-${cat.id}-${index}`}>
+      {/* SingleService Item */}
+      <div className="flex flex-col items-center">
+        <SingleService
+          id={cat.id}
+          categoryName={cat.name}
+          subcategoryId={firstSubId}
+        />
+      </div>
 
-   <div
-          key={cat.id}
-          className="w-[100px] sm:w-[110px] md:w-[130px] bg-slate-100 rounded-md shadow-md flex flex-col items-center justify-center hover:shadow-xl cursor-pointer transition-transform duration-200 hover:scale-105 p-4"
-          onClick={() => handleClick(cat.name)}
-        >,
-          <div>{cat.icon}</div>,
-          <span className="text-xs text-[#4C51BF] font-medium mt-1 text-center">,
-            {cat.subcategories[0].id},
-          </span>,
-        </div>,
+      {/* Banner after every 4 items */}
+      {(index + 1) % 4 === 0 && (
+        <div className="w-full my-6">
+          <img
+            src="/your-banner-image.jpg"
+            alt="Banner"
+            className="w-full h-[180px] object-cover rounded-xl shadow-md"
+          />
+        </div>
+      )}
+    </div>
+  );
+})}
 
-        <SingleService key={cat.id}
-  categoryName={cat.name} 
-  subcategoryId={cat.subcategories[0].id} 
-         />
-
-))}
 
 {/*  */}
               {/* <CleaningServices /> */}
