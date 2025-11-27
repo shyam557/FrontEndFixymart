@@ -15,7 +15,7 @@ export default function BottomNavMobile() {
         <span>Home</span>
       </Link>
       <Link
-        href="/services"
+        href="/services?type=3dc52367-755d-45dc-9bf4-7e7a217d25c4"
         className="flex flex-col items-center text-xs text-gray-700"
         aria-label="Services"
       >
@@ -23,15 +23,15 @@ export default function BottomNavMobile() {
         <span>Services</span>
       </Link>
       <Link
-        href="/well"
+        href="/orders"
         className="flex flex-col items-center text-xs text-gray-700"
         aria-label="Well"
       >
         <FiBell className="text-lg" />
-        <span>Well</span>
+        <span>Orders</span>
       </Link>
       <Link
-        href="/account"
+        href="/register"
         className="flex flex-col items-center text-xs text-gray-700"
         aria-label="Account"
       >

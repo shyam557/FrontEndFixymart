@@ -1,5 +1,6 @@
 "use client";
-export const API_URL = "http://localhost:3002/api/v1"; // your backend base URL
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL ?? 'http://localhost:3002/api/v1';
+
 import { getToken } from "../../lib/auth/auth";
 
 // app/admin/users/page.tsx or page.jsx

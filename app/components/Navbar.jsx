@@ -73,7 +73,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center">
               <img
-                src="/fixymart1.png"
+                src="fixymart.jpeg"
                 alt="FixyMart"
                 className="h-16 w-full"
               />
@@ -168,7 +168,7 @@ export default function Navbar() {
         </Link>
 
         <Link
-          href="/bookings"
+          href="/services?type=3dc52367-755d-45dc-9bf4-7e7a217d25c4"
           className="flex flex-col items-center text-xs text-gray-700"
         >
           <RiServiceLine className="text-xl" />
@@ -176,15 +176,15 @@ export default function Navbar() {
         </Link>
 
         <Link
-          href="/well"
+          href="/orders"
           className="flex flex-col items-center text-xs text-gray-700"
         >
           <FiBell className="text-xl" />
-          Well
+          orders
         </Link>
 
         <Link
-          href="/account"
+          href="/auth/register"
           className="flex flex-col items-center text-xs text-gray-700"
         >
           <FaRegUserCircle className="text-xl" />
