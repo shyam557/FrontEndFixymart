@@ -96,14 +96,14 @@ function OrderDashboard() {
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <ClipboardList className="w-6 h-6 text-blue-500" /> Orders
           </h1>
-
+{/* 
           <button
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold shadow transition-colors"
             onClick={() => setAddModalOpen(true)}
           >
             <Plus className="w-4 h-4" />
             Add Order
-          </button>
+          </button> */}
         </div>
 
         {/* 🔍 Search + Filter */}

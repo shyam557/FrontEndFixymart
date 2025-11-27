@@ -7,6 +7,7 @@ import Link from "next/link";
 import { loginUser } from "../../../src/lib/api/api";
 import { setSessionData, setToken } from "../../../src/lib/auth/auth";
 
+// ✔ v10+ import (correct)
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 
@@ -30,19 +31,21 @@ export default function Login() {
     }));
   };
 
-  /* ------------------ FIREBASE OTP SETUP ------------------ */
+  /* ------------------ INITIALIZE RECAPTCHA (v10 syntax) ------------------ */
   useEffect(() => {
-    // Only initialize Recaptcha if running in browser and firebase `auth` is available
-    if (typeof window !== "undefined" && auth && !window.recaptchaVerifier) {
+    if (typeof window === "undefined") return;
+    if (!auth) return;
+
+    if (!window.recaptchaVerifier) {
       try {
+        // ✔ Correct order: auth → container → options
         window.recaptchaVerifier = new RecaptchaVerifier(
           auth,
           "recaptcha-container",
           { size: "invisible" }
         );
-      } catch (e) {
-        // If Recaptcha initialization fails, log and continue — do not crash the app
-        console.error('Recaptcha initialization failed:', e);
+      } catch (error) {
+        console.error("Recaptcha initialization failed:", error);
       }
     }
   }, []);
@@ -50,28 +53,37 @@ export default function Login() {
   /* ------------------ SEND OTP ------------------ */
   const sendOtp = async () => {
     try {
-      if (!auth) {
-        alert('Authentication not initialized. Please check Firebase configuration.');
+      if (!window.recaptchaVerifier) {
+        alert("Recaptcha not ready.");
         return;
       }
 
-      const appVerifier = window.recaptchaVerifier;
-      if (!appVerifier) {
-        alert('reCAPTCHA verifier not ready. Please refresh the page and try again.');
-        return;
-      }
+      const phoneNumber = "+91" + form.phoneNumber;
 
-      const confirmation = await signInWithPhoneNumber(
+      const confirmationResult = await signInWithPhoneNumber(
         auth,
-        "+91" + form.phoneNumber,
-        appVerifier
+        phoneNumber,
+        window.recaptchaVerifier
       );
 
-      window.confirmationResult = confirmation;
-      alert("OTP sent successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send OTP");
+      window.confirmationResult = confirmationResult;
+
+      alert("OTP Sent!");
+    } catch (error) {
+      console.error("OTP sending error:", error);
+
+      // Reset Recaptcha
+      try {
+        window.recaptchaVerifier.clear();
+      } catch {}
+
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+
+      alert("OTP sending failed.");
     }
   };
 
@@ -80,52 +92,53 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // Step 1: Verify the OTP with Firebase
       const result = await window.confirmationResult.confirm(otp);
 
-      // Step 2: Get Firebase ID token
       const idToken = await result.user.getIdToken(true);
 
-      // Step 3: Send phone + password + idToken to backend
-      const response = await loginUser(form.phoneNumber, form.password, idToken);
+      const response = await loginUser(
+        form.phoneNumber,
+        form.password,
+        idToken
+      );
 
       if (response.access_token) {
         setToken(response.access_token);
         setSessionData(response);
-        // alert("OTP Login Successful!");
         router.push("../../");
       } else {
-        alert(response.message || "OTP login failed");
+        alert(response.message || "Login failed");
       }
-    } catch (err) {
-      console.error(err);
-      alert("Invalid OTP. Try again.");
+    } catch (error) {
+      console.error("Verify OTP error:", error);
+      alert("Invalid OTP");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
 
+      {/* Required Recaptcha container */}
       <div id="recaptcha-container"></div>
 
       <h1 className="text-3xl font-bold mb-6">Phone Login</h1>
 
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm">
 
-        {/* PHONE NUMBER INPUT */}
+        {/* Phone field */}
         <label className="block text-sm font-medium mb-1">Phone Number</label>
         <input
           type="text"
           name="phoneNumber"
           value={form.phoneNumber}
           onChange={handleChange}
-          placeholder="XXXXXXXXXX"
+          placeholder="Enter 10-digit mobile"
           className="w-full border px-3 py-2 rounded mb-4"
         />
 
-        {/* PASSWORD INPUT */}
+        {/* Password field */}
         <label className="block text-sm font-medium mb-1">Password</label>
         <input
           type="password"
@@ -136,7 +149,7 @@ export default function Login() {
           className="w-full border px-3 py-2 rounded mb-4"
         />
 
-        {/* SEND OTP */}
+        {/* Send OTP */}
         <button
           onClick={sendOtp}
           className="w-full bg-blue-600 text-white py-2 rounded mb-4 hover:bg-blue-700"
@@ -144,7 +157,7 @@ export default function Login() {
           Send OTP
         </button>
 
-        {/* OTP INPUT */}
+        {/* OTP input */}
         <label className="block text-sm font-medium mb-1">Enter OTP</label>
         <input
           type="text"
@@ -154,7 +167,7 @@ export default function Login() {
           className="w-full border px-3 py-2 rounded mb-4"
         />
 
-        {/* VERIFY OTP */}
+        {/* Verify + Login */}
         <button
           onClick={verifyOtp}
           className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
@@ -165,7 +178,7 @@ export default function Login() {
 
       <p className="mt-6 text-gray-700">
         Don’t have an account?{" "}
-        <Link href="register" className="text-purple-600 font-medium">
+        <Link href="/auth/register" className="text-purple-600 font-medium">
           Register
         </Link>
       </p>

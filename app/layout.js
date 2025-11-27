@@ -6,8 +6,8 @@ import ReduxProvider from '../src/store/providers/ReduxProvider.jsx';
 import LocationProvider from './components/location/LocationContext.js';
 
 export const metadata = {
-  title: 'UrbanX',
-  description: 'Urban services platform',
+  title: 'Fixymart',
+  description: 'Quick Service for Home Needs',
 };
 
 export default function RootLayout({ children }) {
