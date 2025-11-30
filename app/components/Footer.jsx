@@ -113,7 +113,7 @@ export default function Footer() {
                   </div>
                 </a>
                 <a
-                  href="#"
+                  href="https://play.google.com/store/apps/details?id=com.sshop.fixy_mart&hl=en_IN&gl=US"
                   className="flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition"
                 >
                   <FaGooglePlay size={18} />
