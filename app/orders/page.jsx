@@ -92,6 +92,9 @@ function OrderDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="bg-white rounded-xl shadow p-6">
+          <h1>1</h1>
+          <h1>1</h1>
+
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <ClipboardList className="w-6 h-6 text-blue-500" /> Orders
@@ -99,6 +102,7 @@ function OrderDashboard() {
 {/* 
           <button
             className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold shadow transition-colors"
+            
             onClick={() => setAddModalOpen(true)}
           >
             <Plus className="w-4 h-4" />

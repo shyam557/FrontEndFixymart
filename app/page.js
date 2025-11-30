@@ -1,135 +1,126 @@
 "use client";
 
 import HeroSection from "./components/Herosection";
-//  import Mostservice from "./card/page";
-//  import CleaningServices from "./card/Cleaner/page";
-//  import Applianceservice from "./card/ACservices/page";
-//  import SmartLockBanner from "./card/smart doorbeell/page"; 
-  // import Mservice from "./card/mservice/page";
-// import PlumberServices from "./card/plumber/page";
-// import ElectricianServices from "./card/electrician/page";
-
-// import PainterServices from "./card/Painter/page";
-// import ModularKitchen from "./card/Modular Kitchen/page";
-// import Carpenterservice from "./card/carpenter/page";
-
 import { fetchAllCategories } from "../src/lib/api/api";
-import { useEffect, useState } from 'react';
-
- import SingleService from "./card/SingleService/page";
-
+import { useEffect, useState } from "react";
+import SingleService from "./card/SingleService/page";
 
 export default function Home() {
-
-     const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleClick = (name) => {
-    // simple placeholder click handler — adjust navigation as needed
-    console.log("Category clicked:", name);
-  };
+  const [showDialog, setShowDialog] = useState(false);
+  const [phone, setPhone] = useState("");
+
+  // IMPORTANT: Put even dummy URL
+  const GOOGLE_URL = "https://docs.google.com/spreadsheets/d/1_hlWKH09EsPWzjXaAVG-eAG6YJalrOL0rXTcmOcDC7g/edit?gid=0#gid=0";
+
+  // Fix hydration issues in Next.js
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     async function loadCategories() {
       const data = await fetchAllCategories();
       setCategories(data);
       setLoading(false);
-      // console.log("Fetch all category",data);
     }
     loadCategories();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading categories...</p>;
+  // Auto popup after hydration + 2 seconds
+  useEffect(() => {
+    if (!isHydrated) return;
 
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-3xl font-bold mb-4 text-center">All Categories</h1>
+    const timer = setTimeout(() => {
+      setShowDialog(true);
+    }, 2000);
 
-//       {categories.length === 0 ? (
-//         <p className="text-center text-gray-600">No categories found.</p>
-//       ) : (
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-//           {categories.map((cat) => (
-//             <div key={cat.id} className="border rounded-lg p-4 shadow-sm bg-white">
-//               <h2 className="text-xl font-semibold">{cat.name}</h2>
-//               <p className="text-gray-600">{cat.description}</p>
-//               {cat.icon && (
-//                 <img
-//                   src={cat.icon}
-//                   alt={cat.name}
-//                   className="w-12 h-12 mt-2"
-//                 />
-//               )}
+    return () => clearTimeout(timer);
+  }, [isHydrated]);
 
-//               <div className="mt-3">
-//                 <h4 className="font-medium">Subcategories:</h4>
-//                 <ul className="list-disc list-inside">
-//                   {cat.subcategories.map((sub) => (
-//                     <li key={sub.id}>
-//                       {sub.name} — {sub.duration} min — ₹{sub.basePrice}
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
+  const sendToGoogleSheet = async () => {
+    if (!phone) {
+      alert("Enter phone number");
+      return;
+    }
 
-  return ( 
-    
-      <main className="">
-        <HeroSection data={categories} />
-        
-          <div className="">
-             {/* <Mostservice /> */}
+    try {
+      await fetch(GOOGLE_URL, {
+        method: "POST",
+        body: JSON.stringify({ phone }),
+      });
 
+      alert("Saved!");
+      setShowDialog(false);
+    } catch (err) {
+      alert("Error");
+    }
+  };
 
-{categories.map((cat, index) => {
-  const firstSubId = cat?.subcategories?.[0]?.id ?? null;
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div key={`cat-${cat.id}-${index}`}>
-      {/* SingleService Item */}
-      <div className="flex flex-col items-center">
-        <SingleService
-          id={cat.id}
-          categoryName={cat.name}
-          subcategoryId={firstSubId}
-        />
+    <main className="relative overflow-visible">
+      <HeroSection data={categories} />
+
+      {/* Your existing layout */}
+      <div>
+        {categories.map((cat, index) => (
+          <div key={`cat-${cat.id}-${index}`}>
+            <div className="flex flex-col items-center">
+              <SingleService
+                id={cat.id}
+                categoryName={cat.name}
+                subcategoryId={cat?.subcategories?.[0]?.id ?? null}
+              />
+            </div>
+
+            {(index + 1) % 4 === 0 && (
+              <img
+                src="/your-banner-image.jpg"
+                className="w-full h-[180px] object-cover my-6 rounded-xl"
+              />
+            )}
+          </div>
+        ))}
       </div>
 
-      {/* Banner after every 4 items */}
-      {(index + 1) % 4 === 0 && (
-        <div className="w-full my-6">
-          <img
-            src="/your-banner-image.jpg"
-            alt="Banner"
-            className="w-full h-[180px] object-cover rounded-xl shadow-md"
-          />
+      {/* Dialog */}
+      {showDialog && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl w-80 shadow-xl">
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              Enter Mobile Number
+            </h3>
+
+            <input
+              type="text"
+              className="w-full border p-2 rounded-lg mb-4"
+              placeholder="Enter phone number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+
+            <button
+              onClick={sendToGoogleSheet}
+              className="w-full py-2 bg-blue-600 text-white rounded-lg"
+            >
+              Submit
+            </button>
+
+            <button
+              onClick={() => setShowDialog(false)}
+              className="w-full py-2 mt-3 bg-gray-300 rounded-lg"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
-    </div>
-  );
-})}
-
-
-{/*  */}
-              {/* <CleaningServices /> */}
-             {/* <Applianceservice /> */}
-             {/* <SmartLockBanner /> */}
-           {/* <Mservice /> */}
-            {/* <PlumberServices/> */}
-            {/* <ElectricianServices/> */}
-            {/* <PainterServices /> */}
-            {/* <ModularKitchen /> */}
-            {/* <Carpenterservice /> */}
-          </div> 
-        
-      </main>
-    
+    </main>
   );
 }
