@@ -39,11 +39,16 @@ export default function CheckoutPage() {
   const [postalCode, setPostalCode] = useState('');
   const [lat, setLat] = useState(12.23);
   const [lng, setLng] = useState(12.23);
+  const [addressEditing, setAddressEditing] = useState(false);
+  const [addressSaved, setAddressSaved] = useState(false);
 
   // slots are generated only on client
   const [slots, setSlots] = useState([]);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [slotSelecting, setSlotSelecting] = useState(false);
+  const [slotSaved, setSlotSaved] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -62,6 +67,8 @@ export default function CheckoutPage() {
     if (ctxPostalCode) setPostalCode(ctxPostalCode);
     if (ctxLat) setLat(ctxLat);
     if (ctxLng) setLng(ctxLng);
+    // if location provided, consider it saved by default
+    if (ctxLine1) setAddressSaved(true);
 
     // generate 1-hour slots starting at next full hour (client-only)
     const now = new Date();
@@ -104,23 +111,43 @@ export default function CheckoutPage() {
     return line1 && city && stateVal && postalCode && lat != null && lng != null;
   };
 
+  const handleSaveAddress = () => {
+    if (!validateAddress()) {
+      alert('Please fill all required address fields before saving');
+      return;
+    }
+    setAddressSaved(true);
+    setAddressEditing(false);
+    toast.success('Address saved');
+  };
+
+  const handleSaveSlot = () => {
+    if (selectedSlotIndex === null) {
+      alert('Please select a slot before saving');
+      return;
+    }
+    setSlotSaved(true);
+    setSlotSelecting(false);
+    toast.success('Slot selected');
+  };
+
   const bookOrder = async () => {
     if (!mounted) return; // ensure client-only action
     console.log('Booking Order function called');
 
     if (!isLoggedIn) {
       alert('Please login to continue');
-      router.push(`../auth/login`);
+      setShowLoginDialog(true);
       return;
     }
 
-    if (!validateAddress()) {
-      alert('Please select or enter a valid address');
+    if (!addressSaved) {
+      alert('Please select or save an address before booking');
       return;
     }
 
-    if (selectedSlotIndex === null) {
-      alert('Please select a time slot');
+    if (!slotSaved) {
+      alert('Please select a time slot before booking');
       return;
     }
 
@@ -193,22 +220,22 @@ export default function CheckoutPage() {
           {isLoggedIn === false && (
             <div className="bg-white p-4 rounded shadow">
               <div className="mb-2 font-semibold">Account</div>
-              <div className="mb-2 text-gray-600 text-sm">
-                To book the service, please login or sign up
+              <div className="mb-2 text-gray-600 text-sm">To book the service, please login or sign up</div>
+              <div className="mb-2">
+                <button className="bg-blue-600 text-white px-6 py-2 rounded w-full" onClick={() => setShowLoginDialog(true)}>Login / Sign up</button>
               </div>
-              <input
-                type="text"
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                placeholder="Enter phone number"
-                className="border px-2 py-1 w-full mb-2"
-              />
-              <button
-                className="bg-blue-600 text-white px-6 py-2 rounded w-full"
-                onClick={handleLogin}
-              >
-                Login
-              </button>
+              {showLoginDialog && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                  <div className="bg-white rounded p-6 w-11/12 max-w-md">
+                    <h3 className="text-lg font-semibold mb-2">You need to login</h3>
+                    <p className="text-sm text-gray-600 mb-4">Please login to continue booking services.</p>
+                    <div className="flex gap-2">
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={() => router.push('/auth/login')}>Go to Login</button>
+                      <button className="bg-gray-200 px-4 py-2 rounded" onClick={() => setShowLoginDialog(false)}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -217,79 +244,140 @@ export default function CheckoutPage() {
             <div className="font-semibold mb-2">Address</div>
             <div className="text-xs text-gray-600 mb-2">Fetched from device/location (editable)</div>
 
-            <input
-              type="text"
-              value={line1}
-              onChange={(e) => setLine1(e.target.value)}
-              placeholder="Line 1"
-              className="border px-2 py-1 w-full mb-2"
-            />
-            <input
-              type="text"
-              value={line2}
-              onChange={(e) => setLine2(e.target.value)}
-              placeholder="Line 2 (optional)"
-              className="border px-2 py-1 w-full mb-2"
-            />
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="City"
-                className="border px-2 py-1 w-1/3"
-              />
-              <input
-                type="text"
-                value={stateVal}
-                onChange={(e) => setStateVal(e.target.value)}
-                placeholder="State"
-                className="border px-2 py-1 w-1/3"
-              />
-              <input
-                type="text"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                placeholder="Postal Code"
-                className="border px-2 py-1 w-1/3"
-              />
-            </div>
+            {!addressEditing && addressSaved && (
+              <div className="mb-2">
+                <div className="text-sm font-medium">{line1}{line2 ? `, ${line2}` : ''}</div>
+                <div className="text-sm text-gray-600">{city}, {stateVal} • {postalCode}</div>
+                <div className="text-xs text-gray-500">Lat: {lat ?? 'N/A'} • Lng: {lng ?? 'N/A'}</div>
+                <div className="mt-2">
+                  <button className="text-purple-600 text-sm" onClick={() => { setAddressEditing(true); setAddressSaved(false); }}>
+                    Change address
+                  </button>
+                </div>
+              </div>
+            )}
 
-            <div className="mt-2 text-sm text-gray-500">
-              Lat: {lat ?? 'N/A'} • Lng: {lng ?? 'N/A'}
-            </div>
+            {!addressEditing && !addressSaved && (
+              <div className="mt-3">
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                  onClick={() => setAddressEditing(true)}
+                >
+                  Select an address
+                </button>
+              </div>
+            )}
 
-            <div className="mt-3">
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-                onClick={() => {
-                  if (typeof location?.openLocationModal === 'function') {
-                    location.openLocationModal();
-                  } else {
-                    toast('Open location selector to update address');
-                  }
-                }}
-              >
-                Select an address
-              </button>
-            </div>
+            {addressEditing && (
+              <div>
+                <input
+                  type="text"
+                  value={line1}
+                  onChange={(e) => setLine1(e.target.value)}
+                  placeholder="Line 1"
+                  className="border px-2 py-1 w-full mb-2"
+                />
+                <input
+                  type="text"
+                  value={line2}
+                  onChange={(e) => setLine2(e.target.value)}
+                  placeholder="Line 2 (optional)"
+                  className="border px-2 py-1 w-full mb-2"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="City"
+                    className="border px-2 py-1 w-1/3"
+                  />
+                  <input
+                    type="text"
+                    value={stateVal}
+                    onChange={(e) => setStateVal(e.target.value)}
+                    placeholder="State"
+                    className="border px-2 py-1 w-1/3"
+                  />
+                  <input
+                    type="text"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="Postal Code"
+                    className="border px-2 py-1 w-1/3"
+                  />
+                </div>
+
+                <div className="mt-2 text-sm text-gray-500">Lat: {lat ?? 'N/A'} • Lng: {lng ?? 'N/A'}</div>
+
+                <div className="mt-3 flex gap-2">
+                  <button
+                    className="bg-green-600 text-white px-4 py-2 rounded"
+                    onClick={handleSaveAddress}
+                  >
+                    Save Address
+                  </button>
+                  <button
+                    className="bg-gray-200 px-4 py-2 rounded"
+                    onClick={() => setAddressEditing(false)}
+                  >
+                    Cancel
+                  </button>
+                  {typeof location?.openLocationModal === 'function' && (
+                    <button
+                      className="ml-auto text-sm text-blue-600"
+                      onClick={() => location.openLocationModal()}
+                    >
+                      Use device location
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Slot Section */}
           <div className="bg-white p-4 rounded shadow">
             <div className="font-semibold mb-2">Select Slot</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {slots.map((slot, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedSlotIndex(idx)}
-                  className={`text-sm border rounded px-3 py-2 text-left ${selectedSlotIndex === idx ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}`}
-                >
-                  <div className="font-medium">{formatSlotLabel(slot)}</div>
-                  <div className="text-xs text-gray-500">1 hour</div>
+            {!slotSelecting && slotSaved && selectedSlotIndex !== null && (
+              <div>
+                <div className="font-medium">{formatSlotLabel(slots[selectedSlotIndex])}</div>
+                <div className="text-xs text-gray-500">1 hour</div>
+                <div className="mt-2">
+                  <button className="text-purple-600 text-sm" onClick={() => { setSlotSelecting(true); setSlotSaved(false); }}>
+                    Change slot
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!slotSelecting && !slotSaved && (
+              <div>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={() => setSlotSelecting(true)}>
+                  Select Slot
                 </button>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {slotSelecting && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {slots.map((slot, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedSlotIndex(idx)}
+                    className={`text-sm border rounded px-3 py-2 text-left ${selectedSlotIndex === idx ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}`}
+                  >
+                    <div className="font-medium">{formatSlotLabel(slot)}</div>
+                    <div className="text-xs text-gray-500">1 hour</div>
+                  </button>
+                ))}
+
+                <div className="col-span-full flex gap-2 mt-2">
+                  <button className="bg-green-600 text-white px-4 py-2 rounded" onClick={handleSaveSlot}>Save Slot</button>
+                  <button className="bg-gray-200 px-4 py-2 rounded" onClick={() => setSlotSelecting(false)}>Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Payment Method Section */}

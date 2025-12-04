@@ -45,7 +45,7 @@ export default function ScrollingCard(props) {
 
       {/* Scrollable Card Row */}
       <div
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
+        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {services.map((service) => (
@@ -55,7 +55,7 @@ export default function ScrollingCard(props) {
             className="flex-shrink-0 w-[170px] sm:w-[200px] md:w-[230px] 
                        bg-white border border-gray-200 rounded-2xl shadow-md 
                        hover:shadow-xl hover:-translate-y-1 transition-all duration-300
-                       overflow-hidden"
+                       overflow-hidden snap-start inline-block"
           >
             {/* Title */}
             <div className="p-3 text-center">

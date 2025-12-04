@@ -92,8 +92,7 @@ function OrderDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="bg-white rounded-xl shadow p-6">
-          <h1>1</h1>
-          <h1>1</h1>
+        
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">

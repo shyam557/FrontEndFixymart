@@ -32,15 +32,15 @@ export default function Home() {
   }, []);
 
   // Auto popup after hydration + 2 seconds
-  useEffect(() => {
-    if (!isHydrated) return;
+  // useEffect(() => {
+  //   if (!isHydrated) return;
 
-    const timer = setTimeout(() => {
-      setShowDialog(true);
-    }, 2000);
+  //   const timer = setTimeout(() => {
+  //     setShowDialog(true);
+  //   }, 2000);
 
-    return () => clearTimeout(timer);
-  }, [isHydrated]);
+  //   return () => clearTimeout(timer);
+  // }, [isHydrated]);
 
   const sendToGoogleSheet = async () => {
     if (!phone) {
@@ -89,38 +89,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Dialog */}
-      {showDialog && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-xl w-80 shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              Enter Mobile Number
-            </h3>
-
-            <input
-              type="text"
-              className="w-full border p-2 rounded-lg mb-4"
-              placeholder="Enter phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-
-            <button
-              onClick={sendToGoogleSheet}
-              className="w-full py-2 bg-blue-600 text-white rounded-lg"
-            >
-              Submit
-            </button>
-
-            <button
-              onClick={() => setShowDialog(false)}
-              className="w-full py-2 mt-3 bg-gray-300 rounded-lg"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

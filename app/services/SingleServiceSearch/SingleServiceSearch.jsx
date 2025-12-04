@@ -12,7 +12,7 @@ import axios from "axios";
 import { useRouter } from 'next/navigation';
 import ServiceModal from "../details/ServiceModal";
 import ServiceDetail from "../details/ServiceDetail";
-
+import { Link } from 'react-router-dom';
 import { fetchCategoryWithAllSubCategories ,fetchOneSubCategoryServices } from "../../../src/lib/api/api";
 // import { useEffect, useState } from 'react';
 // import React, { useEffect, useRef, useMemo, useState } from "react";
@@ -319,9 +319,17 @@ export default function SingleServiceSearch({data}) {
             </p>
             <p className="text-lg font-bold text-green-600">₹{totalPrice}</p>
           </div>
-          <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm">
+          <button onClick={() => router.push('/cart')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm" >
             View Cart
           </button>
+
+          {/* <Link
+          to="/cart"
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm"
+>
+  View Cart
+</Link> */}
+
         </div>
       )}
 

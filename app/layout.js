@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
         <ReduxProvider>
           <LocationProvider>
             <ClientNavFooterWrapper>
-              <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>{children}</main>
+              <main className="flex-1 md:pt-20 pt-20">{children}</main>
             </ClientNavFooterWrapper>
           </LocationProvider>
         </ReduxProvider>

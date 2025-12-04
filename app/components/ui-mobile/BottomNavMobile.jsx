@@ -31,12 +31,12 @@ export default function BottomNavMobile() {
         <span>Orders</span>
       </Link>
       <Link
-        href="/register"
+        href="/login"
         className="flex flex-col items-center text-xs text-gray-700"
         aria-label="Account"
       >
         <FaUser className="text-lg" />
-        <span>Account</span>
+        <span>Accounts</span>
       </Link>
     </nav>
   );
