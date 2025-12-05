@@ -80,6 +80,26 @@ export async function fetchAllServices() {
   return await res.json();
 }
 
+export async function fetchTopServices() {
+  const res = await fetch(`${API_URL}/services/top/show`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  return await res.json();
+}
+
+export async function updateServiceShowOnTop(id, showOnTop) {
+  const res = await fetch(`${API_URL}/services/${id}/toggle-show-on-top`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify({ showOnTop }),
+  });
+  return await res.json();
+}
+
 export async function deleteAServices(id) {
   const dta = getSessionData();
   const providerId = dta.user.id;
@@ -140,6 +160,7 @@ export async function createOneService(providerId,description,image,customPrice,
   });
   return await res.json();
 }
+
 
 
 

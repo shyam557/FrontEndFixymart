@@ -122,3 +122,12 @@ export async function fetchAllOrdersOfUser() {
   });
   return await res.json();
 }
+
+
+export async function fetchTopServices() {
+  const res = await fetch(`${API_URL}/services/top/show`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  return await res.json();
+}

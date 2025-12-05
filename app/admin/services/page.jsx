@@ -24,7 +24,7 @@ import {
 import { servicesData } from "./data/servicesData";
 
 
-import { fetchAllCategories, fetchAllServices, deleteService, fetchAllUsers, fetchAllOrders } from "../../../src/lib/api/adminApi";
+import { fetchAllCategories, fetchAllServices, deleteService, fetchAllUsers, fetchAllOrders, updateServiceShowOnTop, fetchTopServices } from "../../../src/lib/api/adminApi";
 
 
 
@@ -463,6 +463,29 @@ function ServicesPageInner() {
                           >
                             <Trash2 className="w-5 h-5 text-red-500" />
                           </button>
+                              {/* showOnTop toggle */}
+                              <button
+                                title={svc.showServiceOnTop ? 'Unset Show On Top' : 'Set Show On Top'}
+                                className={`flex items-center justify-center w-8 h-8 rounded-lg ${svc.showServiceOnTop ? 'bg-yellow-100 hover:bg-yellow-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                                onClick={async () => {
+                                  // optimistic UI update
+                                  const old = services;
+                                  setServices(prev => prev.map(s => s.id === svc.id ? { ...s, showServiceOnTop: !s.showServiceOnTop } : s));
+                                  try {
+                                    await updateServiceShowOnTop(svc.id, !svc.showServiceOnTop);
+                                  } catch (err) {
+                                    console.error('Failed to update showOnTop', err);
+                                    alert('Failed to update showOnTop flag');
+                                    setServices(old);
+                                  }
+                                }}
+                              >
+                                {svc.showServiceOnTop ? (
+                                  <svg className="w-4 h-4 text-yellow-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7l3-7z"/></svg>
+                                ) : (
+                                  <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7l3-7z"/></svg>
+                                )}
+                              </button>
                         </div>
                       </td>
                     </tr>
