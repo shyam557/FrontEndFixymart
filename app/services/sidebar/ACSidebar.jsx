@@ -52,7 +52,7 @@ const ACSidebar = ({ onScrollTo }) => {
 
   return (
     <aside className="p-4 space-y-4">
-      <h3 className="text-lg font-bold mb-2">AC Services</h3>
+      <h3 className="text-lg font-bold mb-2">Services</h3>
       <nav className="space-y-2">
         {items.map((item, idx) => (
           <button

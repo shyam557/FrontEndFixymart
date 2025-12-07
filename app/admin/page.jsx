@@ -14,7 +14,7 @@ export default function Admin() {
       const loggedIn = await checkLogIn();
 
       if (!loggedIn) {
-        router.replace("/admin/login");
+        router.replace("/auth/login");
       }
     };
 

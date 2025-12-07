@@ -77,6 +77,12 @@ const sections = [
       { name: 'All Users', link: '/admin/users' },
     ]
   },
+      {
+    title: 'Providers',
+    items: [
+      { name: 'All provider', link: '/admin/provider' },
+    ]
+  },
   {
     title: 'SETTINGS',
     items: [

@@ -251,7 +251,17 @@ export default function SingleServiceSearch({data}) {
                             </div>
 
                             <div className="flex items-center gap-2 text-gray-700 font-medium mt-[2px]">
-                              <span className="text-black font-semibold">₹{service.price}</span>
+                              {(() => {
+                                const priceNum = Number(service.price) || 0;
+                                const discounted = Math.round(priceNum * 0.8);
+                                return (
+                                  <>
+                                    <span className="text-gray-500 line-through text-sm">₹{priceNum}</span>
+                                    <span className="text-black font-semibold">₹{discounted}</span>
+                                    <span className="text-green-600 text-xs font-medium">20% off</span>
+                                  </>
+                                );
+                              })()}
                               <span className="text-gray-500">• {service.duration || "—"}</span>
                             </div>
                           </div>
