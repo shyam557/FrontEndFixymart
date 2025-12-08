@@ -87,6 +87,9 @@ export default function Home() {
     <main className="relative overflow-visible">
       <HeroSection data={categories} />
 
+
+
+
       {/* Featured Top Services Carousel */}
       {!topLoading && topServices.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 py-8 bg-white">
@@ -134,6 +137,54 @@ export default function Home() {
           </div>
         </div>
       )}
+
+
+{/* Scrollable Cards (Converted to Featured Services Style) */}
+  {/* Featured Top Services Carousel */}
+      {!topLoading && topServices.length > 0 && (
+   
+<div className="max-w-7xl mx-auto px-4 py-8 bg-white">
+  <h2 className="text-2xl font-bold text-gray-900 mb-6">Services</h2>
+
+  <div
+    className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory"
+    style={{ WebkitOverflowScrolling: "touch" }}
+  >
+    {topServices.map((item, index) => {
+      const slug = item.title
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+
+      return (
+        <Link
+          key={index}
+          href={`/card/Cleaner/${slug}`}
+          className="flex-shrink-0 w-[280px] bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden snap-start inline-block"
+        >
+          {/* Image */}
+          <div className="relative w-full h-[200px] flex items-center justify-center bg-gray-50">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          {/* Content */}
+          <div className="p-4 pb-6">
+            <h3 className="font-semibold text-gray-900 text-lg truncate">
+              {item.title}
+            </h3>
+          </div>
+        </Link>
+      );
+    })}
+  </div>
+</div>
+      )}
+
 
       {/* Your existing layout */}
       <div>
