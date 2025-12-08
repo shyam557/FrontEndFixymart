@@ -5,6 +5,7 @@ import { fetchAllCategories, fetchTopServices } from "../src/lib/api/api";
 import { useEffect, useState } from "react";
 import SingleService from "./card/SingleService/page";
 import Image from "next/image";
+import Link from "next/link";
 
 const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
@@ -90,61 +91,12 @@ export default function Home() {
 
 
 
-      {/* Featured Top Services Carousel */}
-      {!topLoading && topServices.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 py-8 bg-white">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Services</h2>
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory" style={{ WebkitOverflowScrolling: "touch" }}>
-            {topServices.map((service) => (
-              <div
-                key={service.id}
-                className="flex-shrink-0 w-[280px] bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden snap-start inline-block"
-              >
-                {/* Image */}
-                <div className="relative w-full h-[200px] flex items-center justify-center bg-gray-50">
-                  {service.image ? (
-                    <Image
-                      src={`${NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG}${service.image}`}
-                      alt={service.description || 'Service'}
-                      width={280}
-                      height={200}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">No Image</div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 text-lg truncate">
-                    {service.description || service.subcategory?.name || 'Service'}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {service.subcategory?.category?.name || 'Category'}
-                  </p>
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-lg font-bold text-green-600">
-                      ₹{service.custom_price ?? (service.subcategory?.base_price || 0)}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {service.subcategory?.duration || 60} min
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-
 {/* Scrollable Cards (Converted to Featured Services Style) */}
   {/* Featured Top Services Carousel */}
       {!topLoading && topServices.length > 0 && (
    
 <div className="max-w-7xl mx-auto px-4 py-8 bg-white">
-  <h2 className="text-2xl font-bold text-gray-900 mb-6">Services</h2>
+  <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Services</h2>
 
   <div
     className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory"
@@ -199,7 +151,8 @@ export default function Home() {
             </div>
 
             {(index + 1) % 4 === 0 && (
-              <img
+              <Image
+              alt="h"
                 src="/your-banner-image.jpg"
                 className="w-full h-[180px] object-cover my-6 rounded-xl"
               />
