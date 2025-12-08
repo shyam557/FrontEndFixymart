@@ -7,6 +7,8 @@ import SingleService from "./card/SingleService/page";
 import Image from "next/image";
 import Link from "next/link";
 
+const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
+
 const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
 export default function Home() {
@@ -42,12 +44,15 @@ export default function Home() {
       try {
         const data = await fetchTopServices();
         setTopServices(Array.isArray(data) ? data : []);
+        console.log(data);
       } catch (err) {
         console.error('Failed to fetch top services:', err);
         setTopServices([]);
       } finally {
         setTopLoading(false);
       }
+
+      console.log(topServices)
     }
     loadTopServices();
   }, []);
@@ -103,7 +108,7 @@ export default function Home() {
     style={{ WebkitOverflowScrolling: "touch" }}
   >
     {topServices.map((item, index) => {
-      const slug = item.title
+      const slug = item.description
         .toLowerCase()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, "");
@@ -117,8 +122,9 @@ export default function Home() {
           {/* Image */}
           <div className="relative w-full h-[200px] flex items-center justify-center bg-gray-50">
             <Image
-              src={item.image}
-              alt={item.title}
+              src={`${IMG_BASE}${item.image}`}
+              // src={item.image}
+              alt={item.description}
               fill
               className="object-cover"
             />
@@ -127,7 +133,7 @@ export default function Home() {
           {/* Content */}
           <div className="p-4 pb-6">
             <h3 className="font-semibold text-gray-900 text-lg truncate">
-              {item.title}
+              {item.description}
             </h3>
           </div>
         </Link>
