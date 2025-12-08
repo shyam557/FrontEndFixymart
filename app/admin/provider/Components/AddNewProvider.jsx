@@ -378,7 +378,7 @@ export default function AddNewProvider({ isOpen, onClose, onAdd }) {
                         <div>
                           <label className="block text-sm text-gray-600 mb-1">Create Password *</label>
                           <input name="password" type="password" placeholder="Enter password" value={form.password} onChange={(e) => setField('password', e.target.value)} className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-                        </div>
+                        </div> 
                       )}
                     </div>
                   </div>
