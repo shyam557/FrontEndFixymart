@@ -13,11 +13,11 @@ jobs:
     steps:
       # 1. Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -89,7 +89,7 @@ jobs:
         run: docker save next-app:latest | gzip > next-app.tar.gz
 
       - name: Upload Docker Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nextjs-docker-image
           path: next-app.tar.gz
