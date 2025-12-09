@@ -1,6 +1,5 @@
 name: Node.js CI/CD
 
-# Trigger workflow on push to main or pull request
 on:
   push:
     branches: [ main ]
@@ -16,27 +15,74 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js environment
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '24'
+          node-version: '20'
 
-      # 3. Install dependencies
+      # 3. Load environment variables from GitHub Secrets
+      - name: Create .env file for Next.js
+        run: |
+          echo "NEXT_PUBLIC_BACKEND_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL }}" >> .env
+          echo "NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG=${{ secrets.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG }}" >> .env
+          echo "NEXT_PUBLIC_API_KEY=${{ secrets.NEXT_PUBLIC_API_KEY }}" >> .env
+
+          echo "FB_PRIVATE_KEY=${{ secrets.FB_PRIVATE_KEY }}" >> .env
+          echo "FB_TYPE=${{ secrets.FB_TYPE }}" >> .env
+          echo "FB_PROJECT_ID=${{ secrets.FB_PROJECT_ID }}" >> .env
+          echo "FB_PRIVATE_KEY_ID=${{ secrets.FB_PRIVATE_KEY_ID }}" >> .env
+          echo "FB_CLIENT_EMAIL=${{ secrets.FB_CLIENT_EMAIL }}" >> .env
+          echo "FB_CLIENT_ID=${{ secrets.FB_CLIENT_ID }}" >> .env
+          echo "FB_AUTH_URI=${{ secrets.FB_AUTH_URI }}" >> .env
+          echo "FB_TOKEN_URI=${{ secrets.FB_TOKEN_URI }}" >> .env
+          echo "FB_AUTH_PROVIDER_CERT_URL=${{ secrets.FB_AUTH_PROVIDER_CERT_URL }}" >> .env
+          echo "FB_CLIENT_CERT_URL=${{ secrets.FB_CLIENT_CERT_URL }}" >> .env
+
+          echo "NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}" >> .env
+          echo "NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}" >> .env
+          echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}" >> .env
+          echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
+          echo "NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}" >> .env
+
+      # 4. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Run tests
+      # 5. Run tests
       - name: Run tests
         run: npm test || echo "Tests failed, continuing deployment"
 
-      # 5. Build project (optional)
+      # 6. Build project using environment variables
       - name: Build project
+        env:
+          NEXT_PUBLIC_BACKEND_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL }}
+          NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG: ${{ secrets.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG }}
+          NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
+
+          FB_PRIVATE_KEY: ${{ secrets.FB_PRIVATE_KEY }}
+          FB_TYPE: ${{ secrets.FB_TYPE }}
+          FB_PROJECT_ID: ${{ secrets.FB_PROJECT_ID }}
+          FB_PRIVATE_KEY_ID: ${{ secrets.FB_PRIVATE_KEY_ID }}
+          FB_CLIENT_EMAIL: ${{ secrets.FB_CLIENT_EMAIL }}
+          FB_CLIENT_ID: ${{ secrets.FB_CLIENT_ID }}
+          FB_AUTH_URI: ${{ secrets.FB_AUTH_URI }}
+          FB_TOKEN_URI: ${{ secrets.FB_TOKEN_URI }}
+          FB_AUTH_PROVIDER_CERT_URL: ${{ secrets.FB_AUTH_PROVIDER_CERT_URL }}
+          FB_CLIENT_CERT_URL: ${{ secrets.FB_CLIENT_CERT_URL }}
+
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
         run: npm run build
 
-      # 6. Deploy to Heroku
+      # 7. Deploy to Heroku
       - name: Deploy to Heroku
-        if: github.ref == 'refs/heads/main'  # deploy only on main branch
+        if: github.ref == 'refs/heads/main'
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
