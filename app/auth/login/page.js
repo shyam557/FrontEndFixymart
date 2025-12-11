@@ -144,7 +144,7 @@ export default function Login() {
               {loading ? "Verifying..." : "Verify OTP & Login"}
             </button>
           </>
-        )}
+        )} 
 
         {/* Recaptcha container */}
         <div id="recaptcha-container"></div>
