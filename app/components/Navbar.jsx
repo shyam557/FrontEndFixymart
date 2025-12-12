@@ -111,45 +111,78 @@ export default function Navbar() {
             </Link>
 
             {/* ------------ LOGIN / ACCOUNT DROPDOWN ------------ */}
-            {!isLoggedIn ? (
-              <div className="relative" data-dropdown-trigger>
-                {/* Click Button */}
-                <div 
-                  className="flex items-center cursor-pointer px-3 py-2 rounded-lg transition-all duration-200"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  <FaRegUserCircle className="text-[1.30rem] text-gray-700" />
-                </div>
-
-                {/* Dropdown */}
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 py-2 bg-white shadow-2xl rounded-lg z-50 opacity-100 border border-gray-200">
-                    <div className="flex justify-between items-center px-4 text-sm text-black">
-                      {/* <span>New customer?</span> */}
-                     
-                    </div>
-
-                    <ul className=" text-sm text-black">         
-                      <li className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors">
-                        My Profile
-                      </li>
-                      <li
-                        onClick={() => {
-                          router.push("/orders");
-                          setIsDropdownOpen(false);
-                        }}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors"
-                      >
-                        My booking
-                      </li>
-                      <li className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors">
-                        Help Center
-                      </li>
-                    </ul>
-                  </div>
-                )}
+            <div className="relative" data-dropdown-trigger>
+              {/* Click Button */}
+              <div 
+                className="flex items-center cursor-pointer px-3 py-2 rounded-lg transition-all duration-200 hover:bg-gray-100"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <FaRegUserCircle className="text-[1.30rem] text-gray-700" />
               </div>
-            ) : null}
+
+              {/* Dropdown */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 py-2 bg-white shadow-2xl rounded-lg z-50 opacity-100 border border-gray-200">
+                  {isLoggedIn && (
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <p className="text-xs text-gray-500">Logged in</p>
+                      <p className="text-sm font-semibold text-gray-800 truncate">
+                        {/* User name can be added here */}
+                      </p>
+                    </div>
+                  )}
+
+                  <ul className="text-sm text-black">
+                    {isLoggedIn ? (
+                      <>
+                        <li
+                          onClick={() => {
+                            router.push("/profile");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors"
+                        >
+                          My Profile
+                        </li>
+                        <li
+                          onClick={() => {
+                            router.push("/orders");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors"
+                        >
+                          My Bookings
+                        </li>
+                        <li className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors">
+                          Help Center
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li
+                          onClick={() => {
+                            router.push("/auth/login");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors font-semibold text-blue-600"
+                        >
+                          Login
+                        </li>
+                        <li
+                          onClick={() => {
+                            router.push("/auth/login");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors text-gray-700"
+                        >
+                          Sign Up
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -184,11 +217,11 @@ export default function Navbar() {
         </Link>
 
         <Link
-          href="/auth/register"
+          href="/auth/login"
           className="flex flex-col items-center text-xs text-gray-700"
         >
           <FaRegUserCircle className="text-xl" />
-          Account
+          Accounts
         </Link>
       </nav>
     </>

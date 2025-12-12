@@ -1,41 +1,43 @@
 "use client";
+
 import Link from "next/link";
-import { FaHome, FaUser, FaTools } from "react-icons/fa";
+import { HiHome } from "react-icons/hi";
+import { RiServiceLine } from "react-icons/ri";
 import { FiBell } from "react-icons/fi";
+import { FaRegUserCircle } from "react-icons/fa";
 
 export default function BottomNavMobile() {
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-white border-t flex justify-around py-2 z-50 md:hidden">
+    <nav className="fixed bottom-0 left-0 w-full bg-gray-100 flex justify-around items-center py-2 md:hidden z-50">
       <Link
         href="/"
-        className="flex flex-col items-center text-xs text-gray-700"
-        aria-label="Home"
+        className="flex flex-col items-center justify-center text-xs text-gray-700 hover:text-gray-900 transition-colors duration-200"
       >
-        <FaHome className="text-lg" />
+        <HiHome className="text-xl mb-1" />
         <span>Home</span>
       </Link>
+
       <Link
         href="/services?type=3dc52367-755d-45dc-9bf4-7e7a217d25c4"
-        className="flex flex-col items-center text-xs text-gray-700"
-        aria-label="Services"
+        className="flex flex-col items-center justify-center text-xs text-gray-700 hover:text-gray-900 transition-colors duration-200"
       >
-        <FaTools className="text-lg" />
+        <RiServiceLine className="text-xl mb-1" />
         <span>Services</span>
       </Link>
+
       <Link
         href="/orders"
-        className="flex flex-col items-center text-xs text-gray-700"
-        aria-label="Well"
+        className="flex flex-col items-center justify-center text-xs text-gray-700 hover:text-gray-900 transition-colors duration-200"
       >
-        <FiBell className="text-lg" />
+        <FiBell className="text-xl mb-1" />
         <span>Orders</span>
       </Link>
+
       <Link
-        href="/login"
-        className="flex flex-col items-center text-xs text-gray-700"
-        aria-label="Account"
+        href="/auth/login"
+        className="flex flex-col items-center justify-center text-xs text-gray-700 hover:text-gray-900 transition-colors duration-200"
       >
-        <FaUser className="text-lg" />
+        <FaRegUserCircle className="text-xl mb-1" />
         <span>Accounts</span>
       </Link>
     </nav>
