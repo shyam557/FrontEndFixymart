@@ -24,3 +24,17 @@ export function getToken() {
 export function removeToken() {
   Cookies.remove("token");
 }
+
+export function isProvider() {
+  const data = getSessionData();
+  if (!data) return false;
+  // Check common role field names for provider status
+  return data.user.role === 'provider'  
+}
+
+export function isAdmin() {
+  const data = getSessionData();
+  if (!data) return false;
+  // Check common role field names for admin status
+  return data.user.role === 'provider' || data.user.role === 'admin' ; 
+}

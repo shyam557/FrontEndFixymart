@@ -80,7 +80,7 @@ export default function Login() {
 
       setToken(response.access_token);
       setSessionData(response);
-
+      console.log(response);
       router.push("../../");
 
     } catch (error) {

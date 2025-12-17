@@ -195,7 +195,7 @@ function ServicesPageInner() {
               className="bg-white rounded-lg shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg"
             >
               <div>
-                <p className="text-sm text-gray-500">AC Services</p>
+                <p className="text-sm text-gray-500">Services</p>
                 <p className="text-2xl font-bold text-slate-800">{stats.categoryCounts.acAppliance.toLocaleString()}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">

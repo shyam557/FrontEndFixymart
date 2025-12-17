@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import AdminDashboard from "./dashboard/dashboard";
 import { Suspense } from "react";
-import { checkLogIn } from "../../src/lib/auth/auth";
+import { checkLogIn, isAdmin } from "../../src/lib/auth/auth";
 import { useRouter } from "next/navigation";
 
 export default function Admin() {
@@ -11,11 +11,15 @@ export default function Admin() {
 
   useEffect(() => {
     const validate = async () => {
-      const loggedIn = await checkLogIn();
 
-      if (!loggedIn) {
-        router.replace("/auth/login");
-      }
+      // // Check if user is admin
+      // const userIsAdmin = isAdmin();
+      // if (!userIsAdmin) {
+      //   router.replace("/auth/login");
+      //   return;
+      // }
+      // console.log("User is admin, access granted to admin page."+userIsAdmin);
+
     };
 
     validate();
