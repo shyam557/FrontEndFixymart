@@ -43,8 +43,8 @@ export default function HeroSection({data} ) {
 
 
   return (
-<section className="bg-white mt-10 md:mt-0 py-12 px-4  text-center overflow-x-hidden">
-  <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 md:py-10 sm:my-10 ">
+<section className="bg-white mt-4 md:mt-0 py-12 px-4  text-center overflow-x-hidden ">
+  <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mt-16">
     Trusted Home Services <br />
   <span className="text-purple-600">At Your Doorest</span></h1>
 
