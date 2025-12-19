@@ -131,3 +131,11 @@ export async function fetchTopServices() {
   });
   return await res.json();
 }
+
+export async function fetchTopServicesByCat(categoryId) {
+  const res = await fetch(`${API_URL}/services/top/category/${categoryId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  return await res.json();
+}

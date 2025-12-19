@@ -9,17 +9,19 @@ import Link from "next/link";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
+// ✅ Banner images hosted in /public
+const BANNERS = [
+  "/banners/banner1.webp",
+  "/banners/banner2.jpg",
+  "/banners/banner3.jpg",
+  "/banners/banner4.jpg",
+];
+
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [topServices, setTopServices] = useState([]);
   const [topLoading, setTopLoading] = useState(true);
-
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   useEffect(() => {
     async function loadCategories() {
@@ -51,77 +53,37 @@ export default function Home() {
     <main className="relative overflow-visible">
       <HeroSection data={categories} />
 
-      {/* Featured Top Services */}
-      {!topLoading && topServices.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 py-8 bg-white">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Featured Services
-          </h2>
-
-          <div
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory"
-            style={{ WebkitOverflowScrolling: "touch" }}
-          >
-            {topServices.map((item, index) => {
-              const slug = item.description
-                ?.toLowerCase()
-                .replace(/\s+/g, "-")
-                .replace(/[^a-z0-9-]/g, "");
-
-              return (
-                <Link
-                  key={index}
-                  href={`/card/Cleaner/${slug}`}
-                  className="flex-shrink-0 w-[280px] bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden snap-start inline-block"
-                >
-                  {/* Image */}
-                  <div className="relative w-full h-[200px] flex items-center justify-center bg-gray-50">
-                    <Image
-                      src={`${IMG_BASE}${item.image}`}
-                      alt={item.description}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4 pb-6">
-                    <h3 className="font-semibold text-gray-900 text-lg truncate">
-                      {item.description}
-                    </h3>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Categories + Banner After Every 4 Items */}
+      {/* Categories + Auto Banner After Every 4 */}
       <div>
-        {categories.map((cat, index) => (
-          <div key={`cat-${cat.id}-${index}`}>
-            <div className="flex flex-col items-center">
-              <SingleService
-                id={cat.id}
-                categoryName={cat.name}
-                subcategoryId={cat?.subcategories?.[0]?.id ?? null}
-              />
-            </div>
+        {categories.map((cat, index) => {
+          // ✅ Calculate banner index automatically
+          const bannerIndex = Math.floor(index / 4) % BANNERS.length;
 
-            {/* Banner image after every 4 categories */}
-            {(index + 1) % 4 === 0 && (
-              <div className="relative w-full h-[180px] my-6 overflow-hidden rounded-xl">
-                <Image
-                  alt="Banner Image"
-                  src="/your-banner-image.jpg"
-                  fill
-                  className="object-cover"
+          return (
+            <div key={`cat-${cat.id}-${index}`}>
+              <div className="flex flex-col items-center">
+                <SingleService
+                  id={cat.id}
+                  categoryName={cat.name}
+                  subcategoryId={cat?.subcategories?.[0]?.id ?? null}
                 />
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* ✅ Banner after every 4 categories */}
+              {(index + 1) % 1 === 0 && (
+                <div className="relative w-full h-[180px] my-8 overflow-hidden rounded-2xl shadow-md">
+                  <Image
+                    src={BANNERS[bannerIndex]}
+                    alt="Category Banner"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </main>
   );

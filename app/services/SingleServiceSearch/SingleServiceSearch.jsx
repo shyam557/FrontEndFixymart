@@ -11,6 +11,7 @@ import axios from "axios";
 
 import { useRouter } from 'next/navigation';
 import ServiceModal from "../details/ServiceModal";
+import { checkLogIn } from "../../../src/lib/auth/auth";
 import ServiceDetail from "../details/ServiceDetail";
 import { Link } from 'react-router-dom';
 import { fetchCategoryWithAllSubCategories ,fetchOneSubCategoryServices } from "../../../src/lib/api/api";
@@ -158,6 +159,10 @@ export default function SingleServiceSearch({data}) {
   };
 
   const handleAdd = (service) => {
+    if (!checkLogIn()) {
+      router.push('/auth/login');
+      return;
+    }
 
     console.log("adding service",service);
     dispatch(addItem({
@@ -174,6 +179,11 @@ export default function SingleServiceSearch({data}) {
   };
 
   const handleIncrement = (service) => {
+    if (!checkLogIn()) {
+      router.push('/auth/login');
+      return;
+    }
+
     dispatch(addItem({ ...service, quantity: 1 }));
     setQuantities((prev) => ({
       ...prev,
@@ -351,28 +361,37 @@ export default function SingleServiceSearch({data}) {
           onClose={() => { setIsModalOpen(false); setSelectedService(null); document.body.style.overflow = ''; }}
           
           onAdd={(s) => {
+            if (!checkLogIn()) {
+              router.push('/auth/login');
+              return;
+            }
 
-             dispatch(addItem({
-     id: s.id,
-     title: s.title,
-     price: s.price,
-     category: s.category,
-     providerId: s.provider_id, // <-- include providerId here
-     quantity: 1
-   }));
-            //  dispatch(addToCart({ ...s, quantity: 1 })); toast.success('Item added to cart'); 
-            }}
-          onDone={(s) => { 
-            // dispatch(addToCart({ ...s, quantity: 1 }));
-     dispatch(addItem({
-     id: s.id,
-     title: s.title,
-     price: s.price,
-     category: s.category,
-     providerId: s.provider_id, // <-- include providerId here
-     quantity: 1
-   }));            
-            router.push('/cart'); }}
+            dispatch(addItem({
+              id: s.id,
+              title: s.title,
+              price: s.price,
+              category: s.category,
+              providerId: s.provider_id,
+              quantity: 1,
+            }));
+            toast.success('Item added to cart');
+          }}
+          onDone={(s) => {
+            if (!checkLogIn()) {
+              router.push('/auth/login');
+              return;
+            }
+
+            dispatch(addItem({
+              id: s.id,
+              title: s.title,
+              price: s.price,
+              category: s.category,
+              providerId: s.provider_id,
+              quantity: 1,
+            }));
+            router.push('/cart');
+          }}
           DetailComponent={ServiceDetail}
         />
       )}

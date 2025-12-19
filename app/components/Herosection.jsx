@@ -76,7 +76,7 @@ export default function HeroSection({data} ) {
           <div>{cat.icon}</div>
           <span className="text-xs text-[#4C51BF] font-medium mt-1 text-center">
             {cat.name}
-            {/* {cat.id} */}
+            {cat.id}
             {/* {cat.subcategories[0].id} */}
           </span>
         </div>

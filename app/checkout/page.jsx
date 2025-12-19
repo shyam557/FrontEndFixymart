@@ -100,7 +100,7 @@ export default function CheckoutPage() {
     (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
     0
   );
-  const taxesAndFees = 89;
+  const taxesAndFees = 0;
   const totalAmount = itemTotal + taxesAndFees;
 
   const handleLogin = () => {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchOneSubCategoryServices } from "../../../src/lib/api/api";
+import { fetchOneSubCategoryServices,fetchTopServicesByCat } from "../../../src/lib/api/api";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
@@ -13,9 +13,13 @@ export default function ScrollingCard(props) {
 
   useEffect(() => {
     async function load() {
-      const data = await fetchOneSubCategoryServices(props.subcategoryId);
+      const data = await fetchTopServicesByCat(props.id);
       setServices(data);
       setLoading(false);
+    // } 
+    //   const data = await fetchOneSubCategoryServices(props.subcategoryId);
+    //   setServices(data);
+    //   setLoading(false);
     }
     load();
   }, [props.subcategoryId]);
