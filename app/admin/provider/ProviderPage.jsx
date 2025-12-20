@@ -9,14 +9,14 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
-import SummaryCards from "./Components/SummaryCards.jsx";
-import ProviderPerformance from "./Components/ProviderPerformance,jsx";
-import ProviderManagement from "./Components/ProviderManagement.jsx";
-import BookingAnalytics from "./Components/BookingAnalytics.jsx";
-import EarningsAndPayout from "./Components/EarningsAndPayout.jsx";
-import ProviderActivityTracking from "./Components/ProviderActivityTracking.jsx";
-import AddNewProvider from "./Components/AddNewProvider.jsx";
-import RecentlyAddedProviders from "./Components/RecentlyAddedProviders.jsx";
+import SummaryCards from "./Components/SummaryCards";
+import ProviderPerformance from "./Components/ProviderPerformance";
+import ProviderManagement from "./Components/ProviderManagement";
+import BookingAnalytics from "./Components/BookingAnalytics";
+import EarningsAndPayout from "./Components/EarningsAndPayout";
+import ProviderActivityTracking from "./Components/ProviderActivityTracking";
+import AddNewProvider from "./Components/AddNewProvider";
+import RecentlyAddedProviders from "./Components/RecentlyAddedProviders";
 
 export default function ProviderPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
