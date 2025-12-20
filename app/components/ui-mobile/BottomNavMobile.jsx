@@ -34,11 +34,11 @@ export default function BottomNavMobile() {
       </Link>
 
       <Link
-        href="/auth/register"
+        href="/profile"
         className="flex flex-col items-center justify-center text-xs text-gray-700 hover:text-gray-900 transition-colors duration-200"
       >
         <FaRegUserCircle className="text-xl mb-1" />
-        <span>Account</span>
+        <span>Accounts</span>
       </Link>
     </nav>
   );

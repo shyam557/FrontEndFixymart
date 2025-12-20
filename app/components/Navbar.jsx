@@ -118,7 +118,10 @@ export default function Navbar() {
                     </div>
 
                     <ul className=" text-sm text-black">         
-                      <li className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors">
+                      <li  onClick={() => {
+                          router.push("/profile");
+                          setIsDropdownOpen(false);
+                        }} className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm transition-colors">
                         My Profile
                       </li>
                       <li

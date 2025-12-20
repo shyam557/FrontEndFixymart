@@ -21,7 +21,8 @@ export default function ProfilePage() {
 
       if (loggedIn) {
         const data = getSessionData();
-        setUserData(data);
+        setUserData(data.user);
+        console.log("User Data:", data);
       }
 
       setLoading(false);
@@ -125,7 +126,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-gray-500 text-sm">Phone</p>
                 <p className="text-gray-800 font-semibold">
-                  {userData?.phone || "Not provided"}
+                  {userData?.phone_number || "Not provided"}
                 </p>
               </div>
             </div>
@@ -147,22 +148,13 @@ export default function ProfilePage() {
                 <div className="flex-1">
                   <p className="text-gray-500 text-sm">User ID</p>
                   <p className="text-gray-800 font-semibold text-sm break-all">
-                    {userData.id}
+                    {userData.idss}
                   </p>
                 </div>
               </div>
             )}
           </div>
-
-          {/* Raw Data (for debugging) */}
-          <details className="mt-8 pt-8 border-t border-gray-200">
-            <summary className="cursor-pointer text-gray-600 hover:text-gray-800 font-medium">
-              Show all data
-            </summary>
-            <pre className="mt-4 bg-gray-100 p-4 rounded overflow-auto text-xs text-gray-700">
-              {JSON.stringify(userData, null, 2)}
-            </pre>
-          </details>
+{/*  */}
         </div>
 
         {/* Quick Links */}
@@ -176,7 +168,7 @@ export default function ProfilePage() {
               My Bookings
             </Link>
             <Link
-              href="/"
+              href="../"
               className="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg text-purple-600 font-semibold transition-colors"
             >
               Continue Shopping

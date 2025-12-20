@@ -262,8 +262,8 @@ export default function SingleServiceSearch({data}) {
 
                             <div className="flex items-center gap-2 text-gray-700 font-medium mt-[2px]">
                               {(() => {
-                                const priceNum = Number(service.price) || 0;
-                                const discounted = Math.round(priceNum * 0.8);
+                                const discounted = Number(service.price) || 0;
+                                const  priceNum = Math.round(discounted * 1.2);
                                 return (
                                   <>
                                     <span className="text-gray-500 line-through text-sm">₹{priceNum}</span>

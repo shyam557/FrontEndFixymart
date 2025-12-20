@@ -92,9 +92,11 @@ export default function ScrollingCard(props) {
               <p className="text-xs text-gray-600 truncate">
                 {service.description}
               </p>
-              <p className="text-sm font-semibold text-green-600 mt-1">
-                ₹{service.custom_price}
-              </p>
+              <div className="mt-1 flex items-center justify-center gap-2">
+                <span className="text-xs text-gray-500 line-through">₹{Math.round((Number(service.custom_price) || 0) * 1.2)}</span>
+                <span className="text-sm font-semibold text-green-600">₹{service.custom_price}</span>
+                <span className="text-xs text-red-600 bg-red-100 px-1 rounded">20% off</span>
+              </div>
             </div>
           </Link>
         ))}
