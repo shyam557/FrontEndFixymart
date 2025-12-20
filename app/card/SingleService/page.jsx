@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchOneSubCategoryServices,fetchTopServicesByCat } from "../../../src/lib/api/api";
+import { fetchTopServicesByCat } from "../../../src/lib/api/api";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
@@ -16,13 +16,9 @@ export default function ScrollingCard(props) {
       const data = await fetchTopServicesByCat(props.id);
       setServices(data);
       setLoading(false);
-    // } 
-    //   const data = await fetchOneSubCategoryServices(props.subcategoryId);
-    //   setServices(data);
-    //   setLoading(false);
     }
     load();
-  }, [props.subcategoryId]);
+  }, [props.id]);
 
   if (loading)
     return <p className="text-center mt-10 text-gray-600">Loading services...</p>;
@@ -32,7 +28,6 @@ export default function ScrollingCard(props) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
@@ -47,19 +42,32 @@ export default function ScrollingCard(props) {
         </Link>
       </div>
 
-      {/* Scrollable Card Row */}
+      {/* ✅ MOBILE-SCROLLABLE ROW */}
       <div
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth snap-x snap-mandatory"
+        className="
+          flex gap-4
+          overflow-x-auto overscroll-x-contain
+          flex-nowrap
+          scrollbar-hide
+          pb-3
+          snap-x snap-mandatory
+          md:overflow-x-visible
+        "
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {services.map((service) => (
           <Link
             key={service.id}
             href={`/services?type=${props.id}`}
-            className="flex-shrink-0 w-[170px] sm:w-[200px] md:w-[230px] 
-                       bg-white border border-gray-200 rounded-2xl shadow-md 
-                       hover:shadow-xl hover:-translate-y-1 transition-all duration-300
-                       overflow-hidden snap-start inline-block"
+            className="
+              flex-shrink-0
+              w-[170px] sm:w-[200px] md:w-[230px]
+              bg-white border border-gray-200 rounded-2xl shadow-md
+              hover:shadow-xl hover:-translate-y-1
+              transition-all duration-300
+              overflow-hidden
+              snap-start
+            "
           >
             {/* Title */}
             <div className="p-3 text-center">

@@ -11,8 +11,8 @@ const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
 // ✅ Banner images hosted in /public
 const BANNERS = [
-  "/banners/banner1.webp",
-  "/banners/banner2.webp",
+  "/banners/banner1.png",
+  "/banners/banner2.jpg",
   "/banners/banner3.webp",
   "/banners/banner4.webp",
 ];
@@ -70,8 +70,8 @@ export default function Home() {
               </div>
 
               {/* ✅ Banner after every 4 categories */}
-              {(index + 1) % 1 === 0 && (
-                <div className="relative w-full h-[180px] my-8 overflow-hidden rounded-2xl shadow-md">
+              {(index + 1) % 3 === 0 && (
+                <div className="relative w-full h-[220px] my-8 overflow-hidden rounded-2xl shadow-md" >
                   <Image
                     src={BANNERS[bannerIndex]}
                     alt="Category Banner"

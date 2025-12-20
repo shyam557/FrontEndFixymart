@@ -86,13 +86,13 @@ export default function Footer() {
               <div className="mt-6">
                 <h3 className="text-lg font-bold mb-3">Social links</h3>
                 <div className="flex space-x-4">
-                  <a href="#" className="text-gray-600 hover:text-black transition">
+                  <a href="https://www.facebook.com/profile.php?id=61585394433352" className="text-gray-600 hover:text-black transition">
                     <FaFacebook size={20} />
                   </a>
                   <a href="#" className="text-gray-600 hover:text-black transition">
                     <FaTwitter size={20} />
                   </a>
-                  <a href="#" className="text-gray-600 hover:text-black transition">
+                  <a href="https://www.instagram.com/fixymart.india/?igsh=cDQ0bXN2eHR1cHRt#" className="text-gray-600 hover:text-black transition">
                     <FaInstagram size={20} />
                   </a>
                 </div>
