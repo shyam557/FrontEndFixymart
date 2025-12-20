@@ -65,19 +65,20 @@ export default function ScrollingCard(props) {
               bg-white border border-gray-200 rounded-2xl shadow-md
               hover:shadow-xl hover:-translate-y-1
               transition-all duration-300
-              overflow-hidden
+              overflow-visible
               snap-start
+              flex flex-col
             "
           >
             {/* Title */}
-            <div className="p-3 text-center">
-              <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+            <div className="p-3 text-center flex-shrink-0">
+              <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                 {service.title}
               </h3>
             </div>
 
             {/* Image */}
-            <div className="relative w-full h-[130px] sm:h-[150px] flex items-center justify-center bg-gray-50">
+            <div className="relative w-full h-[130px] sm:h-[150px] flex items-center justify-center bg-gray-50 flex-grow">
               <Image
                 src={`${IMG_BASE}${service.image}`}
                 alt={service.description}
@@ -92,11 +93,17 @@ export default function ScrollingCard(props) {
               <p className="text-xs text-gray-600 truncate">
                 {service.description}
               </p>
-              <div className="mt-1 flex items-center justify-center gap-2">
-                <span className="text-xs text-gray-500 line-through">₹{Math.round((Number(service.custom_price) || 0) * 1.2)}</span>
-                <span className="text-sm font-semibold text-green-600">₹{service.custom_price}</span>
-                <span className="text-xs text-red-600 bg-red-100 px-1 rounded">20% off</span>
-              </div>
+              {Number(service.custom_price) === 0 ? (
+                <p className="text-sm font-semibold text-blue-600 mt-1">
+                  This service will be available soon
+                </p>
+              ) : (
+                <div className="mt-1 flex items-center justify-center gap-2">
+                  <span className="text-xs text-gray-500 line-through">₹{Math.round((Number(service.custom_price) || 0) * 1.2)}</span>
+                  <span className="text-sm font-semibold text-green-600">₹{service.custom_price}</span>
+                  <span className="text-xs text-red-600 bg-red-100 px-1 rounded">20% off</span>
+                </div>
+              )}
             </div>
           </Link>
         ))}

@@ -263,7 +263,12 @@ export default function SingleServiceSearch({data}) {
                             <div className="flex items-center gap-2 text-gray-700 font-medium mt-[2px]">
                               {(() => {
                                 const discounted = Number(service.price) || 0;
-                                const  priceNum = Math.round(discounted * 1.2);
+                                if (discounted === 0) {
+                                  return (
+                                    <span className="text-blue-600 text-sm">This service will be available soon</span>
+                                  );
+                                }
+                                const priceNum = Math.round(discounted * 1.2);
                                 return (
                                   <>
                                     <span className="text-gray-500 line-through text-sm">₹{priceNum}</span>
@@ -277,35 +282,39 @@ export default function SingleServiceSearch({data}) {
                           </div>
 
                           <div className="mt-1">
-                            <button onClick={() => { setSelectedService(service); setIsModalOpen(true); document.body.style.overflow = 'hidden'; }} className="text-purple-600 text-[12px] sm:text-sm hover:underline">
-                              View details
-                            </button>
+                            {Number(service.price) !== 0 && (
+                              <button onClick={() => { setSelectedService(service); setIsModalOpen(true); document.body.style.overflow = 'hidden'; }} className="text-purple-600 text-[12px] sm:text-sm hover:underline">
+                                View details
+                              </button>
+                            )}
                           </div>
 
                           <div className="mt-1">
-                            {quantities[service.id] ? (
-                              <div className="flex items-center border border-purple-600 rounded px-2 py-0.5 w-max">
+                            {Number(service.price) !== 0 && (
+                              quantities[service.id] ? (
+                                <div className="flex items-center border border-purple-600 rounded px-2 py-0.5 w-max">
+                                  <button
+                                    onClick={() => handleDecrement(service)}
+                                    className="text-purple-600 px-1"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-xs px-1">{quantities[service.id]}</span>
+                                  <button
+                                    onClick={() => handleIncrement(service)}
+                                    className="text-purple-600 px-1"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              ) : (
                                 <button
-                                  onClick={() => handleDecrement(service)}
-                                  className="text-purple-600 px-1"
+                                  onClick={() => handleAdd(service)}
+                                  className="text-purple-600 border border-purple-600 rounded px-3 py-1 text-[11px] sm:text-sm w-max"
                                 >
-                                  -
+                                  book now
                                 </button>
-                                <span className="text-xs px-1">{quantities[service.id]}</span>
-                                <button
-                                  onClick={() => handleIncrement(service)}
-                                  className="text-purple-600 px-1"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => handleAdd(service)}
-                                className="text-purple-600 border border-purple-600 rounded px-3 py-1 text-[11px] sm:text-sm w-max"
-                              >
-                                book now
-                              </button>
+                              )
                             )}
                           </div>
                         </div>
