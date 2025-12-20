@@ -12,9 +12,9 @@ const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 // ✅ Banner images hosted in /public
 const BANNERS = [
   "/banners/banner1.webp",
-  "/banners/banner2.jpg",
-  "/banners/banner3.jpg",
-  "/banners/banner4.jpg",
+  "/banners/banner2.webp",
+  "/banners/banner3.webp",
+  "/banners/banner4.webp",
 ];
 
 export default function Home() {
