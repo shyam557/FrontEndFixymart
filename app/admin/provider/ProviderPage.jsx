@@ -10,7 +10,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import SummaryCards from "./Components/SummaryCards";
-import ProviderPerformance from "./Components/ProviderPerformance";
+import ProviderPerformance from "./Components/ProviderPerformance.jsx";
 import ProviderManagement from "./Components/ProviderManagement";
 import BookingAnalytics from "./Components/BookingAnalytics";
 import EarningsAndPayout from "./Components/EarningsAndPayout";
@@ -18,7 +18,7 @@ import ProviderActivityTracking from "./Components/ProviderActivityTracking";
 import AddNewProvider from "./Components/AddNewProvider";
 import RecentlyAddedProviders from "./Components/RecentlyAddedProviders";
 
-export default function ProviderPage() {
+export default function ProviderPage() { 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
