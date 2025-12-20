@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux';
 import { removeFromCart } from '../../../src/store/cartSlice'; // keep path consistent with your project
 
 const categoryImages = {
-  electrician: '/images/electrician.png',
-  plumber: '/images/plumber.png',
-  'AC Service & Repair': '/images/ac.png',
-  default: '/images/placeholder.png',
+  electrician: '/images/en1.jpg',
+  plumber: '/images/pr2.jpg',
+  'AC Service & Repair': '/images/ac-repair.jpg',
+  default: '/images/placeholder.webp',
 };
 
 export default function CartItemGrouped({ category, items, onAddServices, onCheckout }) {

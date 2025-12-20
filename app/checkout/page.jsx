@@ -2,18 +2,20 @@
 
 const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG 
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useState, useEffect, useMemo } from 'react';
 import { checkLogIn } from '@/src/lib/auth/auth';
 import { createAnOrder } from '@/src/lib/api/api';
+import { clearCart } from '@/src/store/cartSlice';
 import { useLocation } from '@/app/components/location/LocationContext';
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const cartItems = useSelector((state) => state.cart.items || []);
+  const dispatch = useDispatch();
   const [phone, setPhone] = useState('');
 
   // mounted guard to prevent server/client mismatch
@@ -185,6 +187,12 @@ export default function CheckoutPage() {
         console.error('createAnOrder responses', responses);
         alert('Some orders failed. Check console for details.');
       } else {
+        // clear cart on successful booking
+        try {
+          dispatch(clearCart());
+        } catch (e) {
+          console.warn('Failed to clear cart', e);
+        }
         toast.success('Order(s) placed successfully');
         router.push('/orders');
       }
@@ -383,7 +391,7 @@ export default function CheckoutPage() {
           {/* Payment Method Section */}
           <div className="bg-white p-4 rounded shadow">
             <div className="font-semibold mb-2">Payment Method</div>
-            <div className="text-sm text-gray-600">Pay on app (placeholder)</div>
+            <div className="text-sm text-gray-600">Pay After Service</div>
           </div>
 
           {/* Cancellation Policy */}
@@ -453,7 +461,9 @@ export default function CheckoutPage() {
               className="bg-green-600 text-white px-4 py-2 rounded w-full mt-4 disabled:opacity-50"
               disabled={loading || isLoggedIn === null || cartItems.length === 0}
             >
-              {loading ? 'Processing...' : `Pay ₹${totalAmount}`}
+              {/* {loading ? 'Processing...' : `Pay ₹${totalAmount}`} */}
+              {loading ? 'Processing...' : `Pay After Service`}
+
             </button>
           </div>
         </div>
