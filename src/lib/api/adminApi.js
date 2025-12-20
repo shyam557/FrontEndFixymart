@@ -102,6 +102,7 @@ export async function updateServiceShowOnTop(id, showOnTop) {
 
 // Update a service (Provider only) - body should match UpdateServiceDto
 export async function updateService(id, updateData) {
+  console.log(updateData);
   const res = await fetch(`${API_URL}/services/${id}`, {
     method: "PATCH",
     headers: {
