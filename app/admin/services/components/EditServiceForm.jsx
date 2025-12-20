@@ -1,13 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { uploadServiceImage } from "../../../../src/lib/api/adminApi";
 
-const categories = ["Home Appliances", "Beauty", "Home Services"];
 const statusOptions = ["Active", "Inactive", "Completed", "Pending"];
 
-export default function EditServiceForm({ initialData = {}, onSubmit, onCancel }) {
+export default function EditServiceForm({ initialData = {}, onSubmit, onCancel, subcategories = [] }) {
   const [form, setForm] = useState({
     name: initialData.name || "",
-    category: initialData.category || "",
+    subcategoryId: initialData.subcategoryId || initialData.subcategory?.id || "",
     price: initialData.price || "",
     duration: initialData.duration || "",
     status: initialData.status || "Active",
@@ -18,6 +17,18 @@ export default function EditServiceForm({ initialData = {}, onSubmit, onCancel }
   const [imagePreview, setImagePreview] = useState(initialData.image || null);
   const inputRef = useRef(null);
 
+  // Sync form state when initialData changes (e.g., when opening edit modal)
+  useEffect(() => {
+    setForm({
+      name: initialData.name || "",
+      subcategoryId: initialData.subcategoryId || initialData.subcategory?.id || "",
+      price: initialData.price || "",
+      duration: initialData.duration || "",
+      status: initialData.status || "Active",
+      image: initialData.image || null,
+    });
+    setImagePreview(initialData.image || null);
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -66,9 +77,13 @@ export default function EditServiceForm({ initialData = {}, onSubmit, onCancel }
         imageToSend = form.image;
       }
 
-      // Prepare payload to parent (image is a URL string now)
+      // Prepare payload to parent (image is a URL string now). We send subcategoryId instead of category.
       const payload = {
-        ...form,
+        name: form.name,
+        subcategoryId: form.subcategoryId,
+        price: form.price,
+        duration: form.duration,
+        status: form.status,
         image: imageToSend,
       };
 
@@ -106,19 +121,19 @@ export default function EditServiceForm({ initialData = {}, onSubmit, onCancel }
               required
             />
           </div>
-          {/* Category */}
+          {/* Subcategory */}
           <div>
-            <label className="block mb-1 font-medium">Category</label>
+            <label className="block mb-1 font-medium">Subcategory</label>
             <select
-              name="category"
-              value={form.category}
+              name="subcategoryId"
+              value={form.subcategoryId}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 text-sm focus:outline-none"
               required
             >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+              <option value="">Select Subcategory</option>
+              {subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
               ))}
             </select>
           </div>

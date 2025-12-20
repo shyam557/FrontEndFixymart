@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import AddServiceForm from "../components/AddServiceForm";
 import EditServiceForm from "../components/EditServiceForm";
-import { fetchAllCategories, fetchAllServices, deleteService } from "../../../../src/lib/api/adminApi";
+import { fetchAllCategories, fetchAllServices, deleteService, updateService } from "../../../../src/lib/api/adminApi";
 
 const NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
@@ -19,6 +19,16 @@ export default function PainterServicesAdminPage() {
   const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editService, setEditService] = useState(null);
+
+  const mapServiceToEditPayload = (svc) => ({
+    id: svc.id,
+    name: svc.description || svc.name || "",
+    subcategoryId: svc.subcategory?.id ?? svc.subcategoryId ?? svc.subcategory ?? "",
+    price: svc.custom_price ?? svc.price ?? svc.base_price ?? "",
+    duration: svc.duration ?? svc.subcategory?.duration ?? "",
+    status: (svc.is_active ?? (svc.status === "Active")) ? "Active" : "Inactive",
+    image: svc.image || null,
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -161,7 +171,7 @@ export default function PainterServicesAdminPage() {
                           </td>
                           <td className="px-3 py-3 text-center">
                             <div className="flex items-center justify-center gap-2">
-                              <button onClick={() => { setEditService(s); setShowEditModal(true); }} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Edit</button>
+                              <button onClick={() => { setEditService(mapServiceToEditPayload(s)); setShowEditModal(true); }} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">Edit</button>
                               <button onClick={async () => {
                                 if (!window.confirm('Delete this service?')) return;
                                 try {
@@ -220,11 +230,26 @@ export default function PainterServicesAdminPage() {
           <div className="w-full max-w-2xl p-4">
             <EditServiceForm
               initialData={editService}
+              subcategories={subcategories}
               onCancel={() => { setShowEditModal(false); setEditService(null); }}
-              onSubmit={(form) => {
-                setServices(prev => prev.map(svc => svc.id === editService.id ? { ...svc, ...form } : svc));
-                setShowEditModal(false);
-                setEditService(null);
+              onSubmit={async (form) => {
+                try {
+                  const dto = {
+                    description: form.name,
+                    subcategoryId: form.subcategoryId,
+                    customPrice: Number(form.price),
+                    duration: form.duration,
+                    isActive: form.status === 'Active',
+                    image: form.image,
+                  };
+                  const updated = await updateService(editService.id, dto);
+                  setServices(prev => prev.map(svc => svc.id === editService.id ? updated : svc));
+                  setShowEditModal(false);
+                  setEditService(null);
+                } catch (err) {
+                  console.error('Failed to update service', err);
+                  alert('Failed to update service: ' + (err.message || ''));
+                }
               }}
             />
           </div>

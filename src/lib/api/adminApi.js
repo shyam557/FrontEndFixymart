@@ -100,6 +100,23 @@ export async function updateServiceShowOnTop(id, showOnTop) {
   return await res.json();
 }
 
+// Update a service (Provider only) - body should match UpdateServiceDto
+export async function updateService(id, updateData) {
+  const res = await fetch(`${API_URL}/services/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify(updateData),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Failed to update service ${id}`);
+  }
+  return await res.json();
+}
+
 export async function deleteAServices(id) {
   const dta = getSessionData();
   const providerId = dta.user.id;

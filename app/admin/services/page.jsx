@@ -24,7 +24,7 @@ import {
 import { servicesData } from "./data/servicesData";
 
 
-import { fetchAllCategories, fetchAllServices, deleteService, fetchAllUsers, fetchAllOrders, updateServiceShowOnTop, fetchTopServices } from "../../../src/lib/api/adminApi";
+import { fetchAllCategories, fetchAllServices, deleteService, fetchAllUsers, fetchAllOrders, updateServiceShowOnTop, fetchTopServices, updateService } from "../../../src/lib/api/adminApi";
 
 
 
@@ -52,6 +52,17 @@ function ServicesPageInner() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editService, setEditService] = useState(null);
+
+  // Map service object returned from API into the edit form shape
+  const mapServiceToEditPayload = (svc) => ({
+    id: svc.id,
+    name: svc.description || svc.name || "",
+    subcategoryId: svc.subcategory?.id ?? svc.subcategoryId ?? svc.subcategory ?? "",
+    price: svc.custom_price ?? svc.price ?? svc.subcategory?.base_price ?? "",
+    duration: svc.duration ?? svc.subcategory?.duration ?? "",
+    status: (svc.is_active ?? (svc.status === "Active")) ? "Active" : "Inactive",
+    image: svc.image || null,
+  });
 
 
   // Use API hook for services
@@ -440,7 +451,7 @@ function ServicesPageInner() {
                           <button
                             className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100"
                             onClick={() => {
-                              setEditService(svc);
+                              setEditService(mapServiceToEditPayload(svc));
                               setShowEditModal(true);
                             }}
                           >
@@ -527,24 +538,25 @@ function ServicesPageInner() {
             <div className="relative bg-white rounded-2xl">
               <EditServiceForm
                 initialData={editService}
-                onSubmit={(form) => {
-                  setServices(prev => prev.map(svc =>
-                    svc.id === editService.id
-                      ? {
-                          ...svc,
-                          name: form.name,
-                          category: form.category,
-                          price: form.price,
-                          duration: form.duration,
-                          status: form.status,
-                          image: form.image
-                            ? (typeof form.image === 'string' ? form.image : URL.createObjectURL(form.image))
-                            : svc.image,
-                        }
-                      : svc
-                  ));
-                  setShowEditModal(false);
-                  setEditService(null);
+                subcategories={fetchSubCategories}
+                onSubmit={async (form) => {
+                  try {
+                    const dto = {
+                      description: form.name,
+                      subcategoryId: form.subcategoryId,
+                      customPrice: Number(form.price),
+                      duration: form.duration,
+                      isActive: form.status === 'Active',
+                      image: form.image,
+                    };
+                    const updated = await updateService(editService.id, dto);
+                    setServices(prev => prev.map(svc => svc.id === editService.id ? updated : svc));
+                    setShowEditModal(false);
+                    setEditService(null);
+                  } catch (err) {
+                    console.error('Failed to update service', err);
+                    alert('Failed to update service: ' + (err.message || ''));
+                  }
                 }}
                 onCancel={() => {
                   setShowEditModal(false);
