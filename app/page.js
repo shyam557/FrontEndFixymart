@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import SingleService from "./card/SingleService/page";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { checkLogIn } from "../src/lib/auth/auth";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_BACKEND_PUBLIC_API_URL_FOR_IMG;
 
@@ -18,10 +20,29 @@ const BANNERS = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [topServices, setTopServices] = useState([]);
   const [topLoading, setTopLoading] = useState(true);
+
+  // Check if user is logged in, redirect after 3 seconds if not (only once per session)
+  useEffect(() => {
+    if (!checkLogIn()) {
+      try {
+        const already = sessionStorage.getItem("redirectedToLogin");
+        if (already) return; // already redirected once this session
+        sessionStorage.setItem("redirectedToLogin", "1");
+      } catch (e) {
+        // sessionStorage might be unavailable in some environments — proceed without guard
+      }
+
+      const timer = setTimeout(() => {
+        router.push("/auth/login");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [router]);
 
   useEffect(() => {
     async function loadCategories() {
