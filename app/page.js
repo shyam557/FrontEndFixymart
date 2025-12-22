@@ -35,7 +35,7 @@ export default function Home() {
         sessionStorage.setItem("redirectedToLogin", "1");
       } catch (e) {
         // sessionStorage might be unavailable in some environments — proceed without guard
-      }
+      } 
 
       const timer = setTimeout(() => {
         router.push("/auth/login");
